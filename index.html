@@ -28,7 +28,7 @@
         .navbar { display: flex; justify-content: space-between; align-items: center; padding: 1.5rem 4rem; max-width: 1400px; margin: 0 auto; }
         .logo { font-size: 1.5rem; font-weight: 800; color: var(--text-light); text-decoration: none; letter-spacing: -0.5px; }
         .logo span { color: var(--rr-orange); }
-        .nav-links a { color: var(--text-muted); text-decoration: none; font-weight: 700; font-size: 0.9rem; }
+        .nav-links a { color: var(--text-muted); text-decoration: none; font-weight: 700; font-size: 0.9rem; transition: color 0.2s; }
         .nav-links a:hover { color: var(--text-light); }
 
         .museum-container { max-width: 1200px; margin: 1rem auto 4rem auto; padding: 0 2rem; text-align: center; }
@@ -66,13 +66,13 @@
     <nav class="navbar">
         <a href="#" class="logo">Rec<span>Museum</span></a>
         <div class="nav-links">
-            <a href="avatarwall.html">Go to 3D Avatar Wall ➡️</a>
+            <a href="avatarwall.html">Go to 3D Avatar Board ➡️</a>
         </div>
     </nav>
 
     <main class="museum-container">
         <h1 class="hero-title">The Hall of Dorms</h1>
-        <p class="hero-subtitle">Upload your room structure files. Securely updates via your Vercel variables straight into your GitHub repository line.</p>
+        <p class="hero-subtitle">Upload your room structure files. Runs completely client-side via direct automated token sync pipelines.</p>
 
         <div class="museum-viewport-wrapper">
             <button class="back-btn" id="exitRoomBtn" onclick="returnToHallway()">⬅ Return to Hallway</button>
@@ -80,7 +80,7 @@
             
             <div class="loading-overlay" id="loadingOverlay">
                 <div class="loading-text" id="loadingStatusText">Loading Room Assets...</div>
-                <p style="color: var(--text-muted);">Syncing files securely via Vercel ecosystem hooks</p>
+                <p style="color: var(--text-muted);">Syncing assets directly via GitHub API hooks</p>
             </div>
 
             <div class="museum-window">
@@ -141,6 +141,9 @@
         const GITHUB_USERNAME = "bacontheoverseer";
         const REPO_NAME = "weeby.net";
         
+        // Paste your GitHub Token inside the quotes below
+        const AUTH_TOKEN = "PASTE_YOUR_GITHUB_TOKEN_HERE";
+
         let currentZ = -6;
         let isLeftWall = true;
         let selectedFileBase64 = null;
@@ -276,36 +279,65 @@
 
         uploadForm.addEventListener('submit', async (e) => {
             e.preventDefault();
+            if (AUTH_TOKEN === "PASTE_YOUR_GITHUB_TOKEN_HERE" || !AUTH_TOKEN) {
+                alert("Error: Please open the index.html source code and replace AUTH_TOKEN with your actual GitHub token value.");
+                return;
+            }
             const username = document.getElementById('usernameInput').value.trim();
             if (!selectedFileBase64) { alert("Please attach a valid room .gltf configuration first!"); return; }
 
-            submitBtn.innerText = "Committing to repository via secure token handshake...";
+            submitBtn.innerText = "Uploading room directly to GitHub...";
             submitBtn.disabled = true;
 
+            const roomFilename = `${username}.gltf`;
+            const manifestFilename = `${username}.json`;
             let side = isLeftWall ? 'left' : 'right';
 
+            const manifestPayload = {
+                username: username,
+                side: side,
+                zDepth: currentZ,
+                fileName: roomFilename
+            };
+            const manifestBase64 = btoa(JSON.stringify(manifestPayload, null, 2));
+
             try {
-                const response = await fetch('/api/upload-room', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
+                // 1. Push .gltf 3D mesh architecture up to repository tracks
+                await fetch(`https://api.github.com/repos/${GITHUB_USERNAME}/${REPO_NAME}/contents/registry/${roomFilename}`, {
+                    method: 'PUT',
+                    headers: {
+                        'Authorization': `token ${AUTH_TOKEN}`,
+                        'Content-Type': 'application/json'
+                    },
                     body: JSON.stringify({
-                        username: username,
-                        side: side,
-                        zDepth: currentZ,
-                        fileContent: selectedFileBase64
+                        message: `Upload 3D room structure for ${username}`,
+                        content: selectedFileBase64
                     })
                 });
 
-                if (response.ok) {
-                    alert("Room added successfully! Rebuilding your hallway tracker...");
+                // 2. Add door reference manifest index node (.json)
+                const metaPush = await fetch(`https://api.github.com/repos/${GITHUB_USERNAME}/${REPO_NAME}/contents/registry/${manifestFilename}`, {
+                    method: 'PUT',
+                    headers: {
+                        'Authorization': `token ${AUTH_TOKEN}`,
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        message: `Register museum door index tracking node for ${username}`,
+                        content: manifestBase64
+                    })
+                });
+
+                if (metaPush.ok) {
+                    alert("Room structure saved directly to your GitHub repo!");
                     setTimeout(async () => { await loadHallwayFromGitHub(); }, 1200);
                     uploadForm.reset();
                     dropZoneText.innerText = "📁 Click or Drag & Drop `.gltf` here";
                     selectedFileBase64 = null;
                 } else {
-                    alert("Error syncing to your GitHub repository layout via Vercel.");
+                    alert("GitHub API rejected request. Check your hardcoded token permissions.");
                 }
-            } catch (err) { alert("Network error processing serverless stream tokens."); }
+            } catch (err) { alert("Network error logging directly to repository arrays."); }
             finally { submitBtn.disabled = false; submitBtn.innerText = "Save Room Structure To GitHub"; }
         });
 
