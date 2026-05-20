@@ -230,7 +230,7 @@
             reader.readAsDataURL(file);
         }
 
-        // --- CORE SEQUENTIAL STREAMING TIMELINE COMPILER ---
+        // --- STABLE LAZY-RENDERED TIMELINE COMPILER ---
         async function runBrowserScraper() {
             const username = document.getElementById('scraperUsernameInput').value.trim();
             if (!username) { alert("Please type in a Rec Room username first!"); return; }
@@ -279,16 +279,21 @@
                 const feedGrid = document.getElementById('feedGrid');
                 feedGrid.innerHTML = "";
 
-                // Phase 1: Render all structural text placeholders immediately
+                // Render structural layouts and map source attributes to the browser framework directly
                 globallyScrapedPosts.forEach((post, index) => {
                     const postCard = document.createElement('div');
                     postCard.className = 'feed-card';
                     const postedDate = new Date(post.createdAt).toLocaleDateString(undefined, { month: 'short', day: 'numeric', year: 'numeric' });
+                    const rawImgUrl = `/api/upload?proxyUrl=${encodeURIComponent(`https://img.rec.net/${post.imageName}`)}`;
 
                     postCard.innerHTML = `
-                        <div class="feed-img-wrapper" style="background: #1e293b; display: flex; align-items: center; justify-content: center;">
-                            <div id="loader-${index}" style="color: var(--text-muted); font-size: 0.8rem; font-weight: bold;">⏳ Loading image...</div>
-                            <img id="img-${index}" class="feed-card-img" style="display: none;" alt="RecRoom Photo">
+                        <div class="feed-img-wrapper" style="background: #1e293b;">
+                            <img id="img-${index}" 
+                                 src="${rawImgUrl}" 
+                                 class="feed-card-img" 
+                                 loading="lazy" 
+                                 alt="RecRoom Photo"
+                                 onerror="this.style.display='none'; this.parentElement.innerHTML='<div style=\'color:var(--text-muted); font-size:0.8rem; padding:4rem; text-align:center;\'>❌ Image Unavailable</div>';">
                         </div>
                         <div class="feed-card-content">
                             <p class="feed-card-caption">${post.description ? post.description : "<i>No caption provided.</i>"}</p>
@@ -301,35 +306,9 @@
                     feedGrid.appendChild(postCard);
                 });
 
-                // Open and reveal feed frame right away
+                // Open and reveal feed preview interface card blocks
                 document.getElementById('feedWrapper').style.display = 'block';
                 document.getElementById('feedWrapper').scrollIntoView({ behavior: 'smooth' });
-
-                // Phase 2: Stream image payloads strictly one-by-one to protect bandwidth lanes
-                for (let i = 0; i < globallyScrapedPosts.length; i++) {
-                    hintOverlay.innerText = `⏳ Streaming feed images (${i + 1}/${globallyScrapedPosts.length})...`;
-                    const post = globallyScrapedPosts[i];
-                    const targetImgElement = document.getElementById(`img-${i}`);
-                    const targetLoader = document.getElementById(`loader-${i}`);
-
-                    try {
-                        const rawImgUrl = `/api/upload?proxyUrl=${encodeURIComponent(`https://img.rec.net/${post.imageName}`)}`;
-                        const imgCheck = await fetch(rawImgUrl);
-                        
-                        if (imgCheck.ok) {
-                            targetImgElement.src = rawImgUrl;
-                            targetImgElement.style.display = 'block';
-                            if (targetLoader) targetLoader.style.display = 'none';
-                        } else {
-                            if (targetLoader) targetLoader.innerText = "❌ Image Unavailable";
-                        }
-                    } catch (e) {
-                        if (targetLoader) targetLoader.innerText = "❌ Load Error";
-                    }
-                    
-                    await new Promise(resolve => setTimeout(resolve, 50));
-                }
-
                 hintOverlay.innerText = "✅ Timeline loaded! Scroll down to explore or download the full asset bundle.";
 
             } catch (err) {
