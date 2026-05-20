@@ -230,7 +230,7 @@
             reader.readAsDataURL(file);
         }
 
-        // --- QUADRUPLE-CHECKED PRESERVED PARAMETER TIMELINE COMPILER ---
+        // --- SEAMLESS DUAL-PROXY FALLBACK TIMELINE COMPILER ---
         async function runBrowserScraper() {
             const username = document.getElementById('scraperUsernameInput').value.trim();
             if (!username) { alert("Please type in a Rec Room username first!"); return; }
@@ -238,101 +238,120 @@
             const scrapeBtn = document.getElementById('scrapeBtn');
             scrapeBtn.innerText = "⏳ Reading Profile...";
             scrapeBtn.disabled = true;
-            hintOverlay.innerText = "⏳ Routing credentials through unblocked parameter lanes...";
+            hintOverlay.innerText = "⏳ Establishing secure lookup tunnel...";
             
+            let accountData = null;
+            const accountUrl = `https://accounts.rec.net/account?username=${encodeURIComponent(username)}`;
+
+            // --- STEP 1: ACCOUNT LOOKUP ---
             try {
-                // Route via AllOrigins string wrapper to perfectly protect url variables
-                const accountUrl = `https://accounts.rec.net/account?username=${encodeURIComponent(username)}`;
-                const accountRes = await fetch(`https://api.allorigins.win/get?url=${encodeURIComponent(accountUrl)}`);
-                
-                if (!accountRes.ok) {
-                    alert("Account lookup failed! Could not communicate with data extraction lane.");
-                    resetScrapeButton();
-                    return;
+                const response = await fetch(`https://api.allorigins.win/get?url=${encodeURIComponent(accountUrl)}`);
+                if (response.ok) {
+                    const wrapper = await response.json();
+                    if (wrapper.contents) accountData = JSON.parse(wrapper.contents);
                 }
-                
-                const wrapperData = await accountRes.json();
-                if (!wrapperData.contents) {
-                    alert("Account layout not found. Verify you are using the static registration login handle.");
-                    resetScrapeButton();
-                    return;
-                }
-
-                const accountData = JSON.parse(wrapperData.contents);
-                globallyScrapedId = accountData.accountId;
-                globallyScrapedUsername = username;
-
-                if (!globallyScrapedId) {
-                    alert("No internal ID mapping found for this handle.");
-                    resetScrapeButton();
-                    return;
-                }
-
-                hintOverlay.innerText = "⏳ Compiling historical photo timeline indexes...";
-
-                const feedUrl = `https://api.rec.net/api/images/v4/player/${globallyScrapedId}?take=35`;
-                const feedRes = await fetch(`https://api.allorigins.win/get?url=${encodeURIComponent(feedUrl)}`);
-                
-                if (!feedRes.ok) {
-                    alert("Failed to grab the timeline feed manifest.");
-                    resetScrapeButton();
-                    return;
-                }
-
-                const wrapperFeed = await feedRes.json();
-                globallyScrapedPosts = JSON.parse(wrapperFeed.contents);
-
-                if (!globallyScrapedPosts || globallyScrapedPosts.length === 0) {
-                    alert("This user has zero shared images or timeline posts logged.");
-                    resetScrapeButton();
-                    return;
-                }
-
-                document.getElementById('feedUserTag').innerText = `@${username}`;
-                document.getElementById('feedCountText').innerText = `${globallyScrapedPosts.length} historical memory nodes captured`;
-                
-                // Native images load safely cross-origin on img tags
-                document.getElementById('feedUserAvatar').src = `https://api.rec.net/api/images/v4/avatar?accountId=${globallyScrapedId}`;
-
-                const feedGrid = document.getElementById('feedGrid');
-                feedGrid.innerHTML = "";
-
-                globallyScrapedPosts.forEach((post, index) => {
-                    const postCard = document.createElement('div');
-                    postCard.className = 'feed-card';
-                    const postedDate = new Date(post.createdAt).toLocaleDateString(undefined, { month: 'short', day: 'numeric', year: 'numeric' });
-                    const rawImgUrl = `https://img.rec.net/${post.imageName}`;
-
-                    postCard.innerHTML = `
-                        <div class="feed-img-wrapper" style="background: #1e293b;">
-                            <img id="img-${index}" 
-                                 src="${rawImgUrl}" 
-                                 class="feed-card-img" 
-                                 loading="lazy" 
-                                 alt="RecRoom Photo"
-                                 onerror="this.style.display='none'; this.parentElement.innerHTML='<div style=\'color:var(--text-muted); font-size:0.8rem; padding:4rem; text-align:center;\'>❌ Image Private or Missing</div>';">
-                        </div>
-                        <div class="feed-card-content">
-                            <p class="feed-card-caption">${post.description ? post.description : "<i>No caption provided.</i>"}</p>
-                            <div class="feed-card-footer">
-                                <span>📅 ${postedDate}</span>
-                                <span class="feed-cheers">🧡 ${post.cheersCount} Cheers</span>
-                            </div>
-                        </div>
-                    `;
-                    feedGrid.appendChild(postCard);
-                });
-
-                document.getElementById('feedWrapper').style.display = 'block';
-                document.getElementById('feedWrapper').scrollIntoView({ behavior: 'smooth' });
-                hintOverlay.innerText = "✅ Timeline loaded! Scroll down to explore or download the full asset bundle.";
-
-            } catch (err) {
-                console.error(err);
-                alert("The lookup handshake timed out. The profile layout could not be verified.");
-            } finally {
-                resetScrapeButton();
+            } catch (primaryErr) {
+                console.log("AllOrigins failed or timed out. Engaging secondary proxy corridor...");
             }
+
+            if (!accountData) {
+                try {
+                    const fallbackRes = await fetch(`https://corsproxy.io/?url=${encodeURIComponent(accountUrl)}`);
+                    if (fallbackRes.ok) {
+                        accountData = await fallbackRes.json();
+                    }
+                } catch (fallbackErr) {
+                    console.error("Both proxy nodes failed to respond.", fallbackErr);
+                }
+            }
+
+            if (!accountData) {
+                alert("The lookup handshake timed out across all active nodes. Verify your connection or username.");
+                resetScrapeButton();
+                return;
+            }
+
+            globallyScrapedId = accountData.accountId;
+            globallyScrapedUsername = username;
+
+            if (!globallyScrapedId) {
+                alert("No internal ID mapping found for this handle.");
+                resetScrapeButton();
+                return;
+            }
+
+            hintOverlay.innerText = "⏳ Compiling historical photo timeline indexes...";
+            const feedUrl = `https://api.rec.net/api/images/v4/player/${globallyScrapedId}?take=35`;
+            let feedData = null;
+
+            // --- STEP 2: TIMELINE FEED MANIFEST ---
+            try {
+                const feedRes = await fetch(`https://api.allorigins.win/get?url=${encodeURIComponent(feedUrl)}`);
+                if (feedRes.ok) {
+                    const wrapperFeed = await feedRes.json();
+                    if (wrapperFeed.contents) feedData = JSON.parse(wrapperFeed.contents);
+                }
+            } catch (e) {
+                console.log("AllOrigins feed lookup failed. Falling back to secondary node...");
+            }
+
+            if (!feedData) {
+                try {
+                    const fallbackFeedRes = await fetch(`https://corsproxy.io/?url=${encodeURIComponent(feedUrl)}`);
+                    if (fallbackFeedRes.ok) {
+                        feedData = await fallbackFeedRes.json();
+                    }
+                } catch (err) {
+                    console.error("Timeline retrieval completely blocked.");
+                }
+            }
+
+            globallyScrapedPosts = feedData;
+
+            if (!globallyScrapedPosts || globallyScrapedPosts.length === 0) {
+                alert("This user has zero shared images or timeline posts logged.");
+                resetScrapeButton();
+                return;
+            }
+
+            // --- STEP 3: RENDER RENDERING ENGINE LAYOUT ---
+            document.getElementById('feedUserTag').innerText = `@${username}`;
+            document.getElementById('feedCountText').innerText = `${globallyScrapedPosts.length} historical memory nodes captured`;
+            document.getElementById('feedUserAvatar').src = `https://api.rec.net/api/images/v4/avatar?accountId=${globallyScrapedId}`;
+
+            const feedGrid = document.getElementById('feedGrid');
+            feedGrid.innerHTML = "";
+
+            globallyScrapedPosts.forEach((post, index) => {
+                const postCard = document.createElement('div');
+                postCard.className = 'feed-card';
+                const postedDate = new Date(post.createdAt).toLocaleDateString(undefined, { month: 'short', day: 'numeric', year: 'numeric' });
+                const rawImgUrl = `https://img.rec.net/${post.imageName}`;
+
+                postCard.innerHTML = `
+                    <div class="feed-img-wrapper" style="background: #1e293b;">
+                        <img id="img-${index}" 
+                             src="${rawImgUrl}" 
+                             class="feed-card-img" 
+                             loading="lazy" 
+                             alt="RecRoom Photo"
+                             onerror="this.style.display='none'; this.parentElement.innerHTML='<div style=\'color:var(--text-muted); font-size:0.8rem; padding:4rem; text-align:center;\'>❌ Image Private or Missing</div>';">
+                    </div>
+                    <div class="feed-card-content">
+                        <p class="feed-card-caption">${post.description ? post.description : "<i>No caption provided.</i>"}</p>
+                        <div class="feed-card-footer">
+                            <span>📅 ${postedDate}</span>
+                            <span class="feed-cheers">🧡 ${post.cheersCount} Cheers</span>
+                        </div>
+                    </div>
+                `;
+                feedGrid.appendChild(postCard);
+            });
+
+            document.getElementById('feedWrapper').style.display = 'block';
+            document.getElementById('feedWrapper').scrollIntoView({ behavior: 'smooth' });
+            hintOverlay.innerText = "✅ Timeline loaded! Scroll down to explore or download the full asset bundle.";
+            resetScrapeButton();
         }
 
         // --- CLIENT-SIDE ZIP COMPRESSION CORRIDOR ---
@@ -367,7 +386,6 @@
                             const imageResponse = await fetch(`https://api.allorigins.win/get?url=${encodeURIComponent(rawTargetUrl)}`);
                             if (imageResponse.ok) {
                                 const wrapperImg = await imageResponse.json();
-                                // Converting image string back into downloable assets
                                 const blobRes = await fetch(wrapperImg.contents);
                                 const fileBlob = await blobRes.blob();
                                 imageFolder.file(`${post.imageId}.jpg`, fileBlob);
