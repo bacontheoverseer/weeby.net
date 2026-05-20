@@ -2,37 +2,59 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>WeebyHost - Museum</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WeebyHost - Rec Room Dorm Museum</title>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;700;800&display=swap" rel="stylesheet">
     <script src="https://aframe.io/releases/1.4.0/aframe.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/gh/c-frame/aframe-extras@7.2.0/dist/aframe-extras.min.js"></script>
+    <style>
+        :root { --bg-dark: #121620; --rr-orange: #ff5722; --text-light: #f8fafc; --panel-bg: #1e293b; }
+        body { background-color: var(--bg-dark); color: var(--text-light); font-family: 'Plus Jakarta Sans', sans-serif; margin: 0; }
+        .navbar { display: flex; justify-content: space-between; padding: 1.5rem 4rem; }
+        .logo { font-size: 1.5rem; font-weight: 800; color: white; text-decoration: none; }
+        .museum-viewport-wrapper { max-width: 1200px; margin: 2rem auto; border: 6px solid var(--panel-bg); border-radius: 28px; overflow: hidden; }
+        .museum-window { width: 100%; height: 550px; }
+        .upload-card { max-width: 600px; margin: 2rem auto; background: var(--panel-bg); padding: 2.5rem; border-radius: 24px; }
+        input, button { width: 100%; padding: 1rem; margin: 0.5rem 0; border-radius: 12px; border: none; }
+        button { background-color: var(--rr-orange); color: white; font-weight: bold; cursor: pointer; }
+    </style>
 </head>
 <body>
-    <a href="avatarwall.html">Go to Avatar Wall ➡️</a>
-    <form id="uploadForm">
-        <input type="text" id="username" placeholder="Username" required>
-        <input type="file" id="file" accept=".gltf" required>
-        <button type="submit">Add to Museum</button>
-    </form>
-
+    <nav class="navbar"><a href="#" class="logo">Rec<span>Museum</span></a><a href="avatarwall.html">Avatar Board ➡️</a></nav>
+    <div class="museum-viewport-wrapper">
+        <a-scene embedded class="museum-window">
+            <a-sky color="#1a202c"></a-sky>
+            <a-entity id="hallwayDoors"></a-entity>
+            <a-entity id="playerRig" position="0 0 3" movement-controls>
+                <a-entity camera look-controls position="0 1.6 0"><a-cursor></a-cursor></a-entity>
+            </a-entity>
+        </a-scene>
+    </div>
+    <div class="upload-card">
+        <h3>Add Room Structure</h3>
+        <form id="uploadForm">
+            <input type="text" id="username" placeholder="Username" required>
+            <input type="file" id="file" accept=".gltf" required>
+            <button type="submit">Save to GitHub</button>
+        </form>
+    </div>
     <script>
         const REPO = "bacontheoverseer/weeby.net";
-        // To trigger dispatch from browser, use a restricted PAT here
-        const PAT = "YOUR_DISPATCH_TOKEN"; 
-
+        const PAT = "YOUR_DISPATCH_TOKEN"; // Use your restricted PAT here
         document.getElementById('uploadForm').onsubmit = async (e) => {
             e.preventDefault();
             const file = document.getElementById('file').files[0];
             const reader = new FileReader();
             reader.onload = async (ev) => {
-                const content = ev.target.result.split(',')[1];
                 await fetch(`https://api.github.com/repos/${REPO}/dispatches`, {
                     method: 'POST',
                     headers: { 'Authorization': `token ${PAT}`, 'Accept': 'application/vnd.github.v3+json' },
                     body: JSON.stringify({
                         event_type: 'upload-room',
-                        client_payload: { filename: `${document.getElementById('username').value}.gltf`, content: content }
+                        client_payload: { filename: `${document.getElementById('username').value}.gltf`, content: ev.target.result.split(',')[1] }
                     })
                 });
-                alert("Upload sent to GitHub Actions!");
+                alert("Upload triggered!");
             };
             reader.readAsDataURL(file);
         };
