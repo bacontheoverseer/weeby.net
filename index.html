@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>WeebyHost - Rec Room Dorm Museum</title>
+    <title>WeebyHost - Rec Room Dorm Museum & Archive</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
@@ -30,7 +30,7 @@
         .logo { font-size: 1.5rem; font-weight: 800; color: var(--text-light); text-decoration: none; letter-spacing: -0.5px; }
         .logo span { color: var(--rr-orange); }
 
-        .museum-container { max-width: 1200px; margin: 1rem auto 6rem auto; padding: 0 2rem; text-align: center; }
+        .museum-container { max-width: 1200px; margin: 1rem auto 4rem auto; padding: 0 2rem; text-align: center; }
         .hero-title { font-size: 3rem; font-weight: 800; letter-spacing: -1.5px; margin-bottom: 0.5rem; }
         .hero-subtitle { color: var(--text-muted); font-size: 1rem; max-width: 600px; margin: 0 auto 2.5rem auto; }
 
@@ -43,7 +43,7 @@
         .back-btn { display: none; position: absolute; top: 20px; left: 20px; z-index: 20; background: var(--rr-orange); color: white; border: none; padding: 0.6rem 1.2rem; border-radius: 50px; font-weight: 700; cursor: pointer; }
 
         .forms-layout { display: flex; gap: 2rem; max-width: 1100px; margin: 0 auto; text-align: left; }
-        .upload-card { background: var(--panel-bg); border-radius: 24px; padding: 2.5rem; flex: 1; box-shadow: 0 15px 35px rgba(0,0,0,0.2); }
+        .upload-card { background: var(--panel-bg); border-radius: 24px; padding: 2.5rem; flex: 1; box-shadow: 0 15px 35px rgba(0,0,0,0.2); height: fit-content; }
         .upload-card h3 { font-size: 1.3rem; font-weight: 800; margin-bottom: 0.5rem; color: white; }
         .upload-card p { font-size: 0.9rem; color: var(--text-muted); margin-bottom: 1.5rem; }
         
@@ -55,10 +55,30 @@
         .file-drop-zone { border: 2px dashed #475569; border-radius: 12px; padding: 1.5rem; text-align: center; background-color: #0f172a; cursor: pointer; font-weight: 600; color: var(--text-muted); }
         .file-drop-zone.active { border-color: var(--rr-orange); background: rgba(255,87,34,0.05); }
         
-        .btn-submit { background-color: var(--rr-orange); color: white; border: none; width: 100%; padding: 0.8rem; border-radius: 50px; font-weight: 700; font-size: 1rem; cursor: pointer; margin-top: 1rem; transition: background 0.2s; }
+        .btn-submit { background-color: var(--rr-orange); color: white; border: none; width: 100%; padding: 0.8rem; border-radius: 50px; font-weight: 700; font-size: 1rem; cursor: pointer; margin-top: 1rem; transition: background 0.2s; text-align: center; display: block; text-decoration: none; }
         .btn-submit:hover { background-color: var(--rr-orange-dark); }
         .btn-secondary { background-color: #0f172a; border: 2px solid #334155; color: white; }
         .btn-secondary:hover { background-color: #1e293b; border-color: var(--text-muted); }
+        
+        /* --- NEW: SOCIAL MEDIA TIMELINE FEED STYLING --- */
+        .archive-feed-wrapper { max-width: 1100px; margin: 4rem auto 0 auto; padding: 2rem; background: #0f172a; border-radius: 28px; border: 2px solid var(--panel-bg); text-align: left; display: none; }
+        .feed-header { display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid var(--panel-bg); padding-bottom: 1.5rem; margin-bottom: 2rem; }
+        .feed-user-meta { display: flex; align-items: center; gap: 1rem; }
+        .feed-avatar { width: 64px; height: 64px; border-radius: 50%; background: var(--panel-bg); border: 2px solid var(--rr-orange); object-fit: cover; }
+        .feed-user-meta h4 { font-size: 1.4rem; font-weight: 800; }
+        .feed-user-meta p { color: var(--text-muted); font-size: 0.9rem; }
+        
+        .feed-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 2rem; }
+        .feed-card { background: var(--panel-bg); border-radius: 20px; overflow: hidden; box-shadow: 0 10px 25px rgba(0,0,0,0.15); transition: transform 0.2s; }
+        .feed-card:hover { transform: translateY(-4px); }
+        .feed-img-wrapper { width: 100%; aspect-ratio: 16/9; background: #0f172a; overflow: hidden; position: relative; }
+        .feed-card-img { width: 100%; height: 100%; object-fit: cover; }
+        .feed-card-content { padding: 1.25rem; }
+        .feed-card-caption { font-size: 0.95rem; font-weight: 500; margin-bottom: 1rem; color: #f1f5f9; line-height: 1.4; }
+        .feed-card-footer { display: flex; justify-content: space-between; align-items: center; color: var(--text-muted); font-size: 0.8rem; font-weight: 700; }
+        .feed-cheers { display: flex; align-items: center; gap: 0.3rem; color: var(--rr-orange); }
+        
+        .download-action-box { width: auto; min-width: 200px; }
         footer { text-align: center; padding: 3rem; color: var(--text-muted); font-size: 0.85rem; }
     </style>
 </head>
@@ -142,16 +162,32 @@
             </div>
 
             <div class="upload-card">
-                <h3>Download Your Profile Backup</h3>
-                <p>Scrape and download your text posts, timeline logs, and original high-res feed pictures before the sunset date.</p>
+                <h3>Look Up Profile Feed</h3>
+                <p>Load someone's rec.net timeline posts, images, and avatar directly into an archive viewer page.</p>
                 
                 <div class="form-group">
                     <label>Rec Room Account Name</label>
                     <input type="text" id="scraperUsernameInput" placeholder="e.g., YourUsernameTag">
                 </div>
-                <button type="button" class="btn-submit btn-secondary" id="scrapeBtn" onclick="runBrowserScraper()">Download My Profile Time Capsule</button>
+                <button type="button" class="btn-submit btn-secondary" id="scrapeBtn" onclick="runBrowserScraper()">Load Profile Timeline</button>
             </div>
         </div>
+
+        <section class="archive-feed-wrapper" id="feedWrapper">
+            <div class="feed-header">
+                <div class="feed-user-meta">
+                    <img src="" class="feed-avatar" id="feedUserAvatar" alt="Avatar">
+                    <div>
+                        <h4 id="feedUserTag">@Username</h4>
+                        <p id="feedCountText">0 historical moments captured</p>
+                    </div>
+                </div>
+                <div class="download-action-box">
+                    <button class="btn-submit" id="zipDownloadBtn" onclick="downloadCompiledArchiveZip()">📥 Save Whole Archive (.ZIP)</button>
+                </div>
+            </div>
+            <div class="feed-grid" id="feedGrid"></div>
+        </section>
     </main>
 
     <footer>
@@ -167,6 +203,9 @@
         let currentZ = -6;
         let isLeftWall = true;
         let selectedFileBase64 = null;
+        let globallyScrapedPosts = []; 
+        let globallyScrapedUsername = "";
+        let globallyScrapedId = "";
 
         const dropZone = document.getElementById('dropZone');
         const fileInput = document.getElementById('fileInput');
@@ -191,106 +230,165 @@
             reader.readAsDataURL(file);
         }
 
-        // --- FIXED: PURE CLIENT-SIDE FETCH PREVENTS SERVERLESS FIREWALL BLOCKS ---
+        // --- NEW & UPGRADED: CORE TIMELINE COMPILER ---
         async function runBrowserScraper() {
             const username = document.getElementById('scraperUsernameInput').value.trim();
             if (!username) { alert("Please type in a Rec Room username first!"); return; }
 
             const scrapeBtn = document.getElementById('scrapeBtn');
-            scrapeBtn.innerText = "⏳ Processing Account...";
+            scrapeBtn.innerText = "⏳ Reading Profile...";
             scrapeBtn.disabled = true;
-            hintOverlay.innerText = "⏳ Connecting to Rec Room account records directly from your browser...";
+            hintOverlay.innerText = "⏳ Loading user identity metrics directly from your browser configuration...";
             
             try {
-                // Direct lookup from player browser completely satisfies the Rec Room security filters
                 const accountRes = await fetch(`https://accounts.rec.net/account?username=${encodeURIComponent(username)}`);
-                
                 if (!accountRes.ok) {
-                    alert("Account lookup failed! The user could not be found or rec.net servers are currently unresponsive.");
+                    alert("Account lookup failed! The user could not be located on the rec.net cluster node network.");
                     resetScrapeButton();
                     return;
                 }
                 
                 const accountData = await accountRes.json();
-                const accountId = accountData.accountId;
+                globallyScrapedId = accountData.accountId;
+                globallyScrapedUsername = username;
 
-                if (!accountId) {
-                    alert("No internal account ID found associated with that name.");
+                if (!globallyScrapedId) {
+                    alert("No internal mapping signature exists for that profile.");
                     resetScrapeButton();
                     return;
                 }
 
-                hintOverlay.innerText = `⏳ Sweep verified. Accessing photo feeds for Account ID ${accountId}...`;
+                hintOverlay.innerText = "⏳ Compiling historical photo timeline indexes...";
 
-                // Fetch data manifest logs via our custom image converter pass proxy
-                const feedProxy = encodeURIComponent(`https://api.rec.net/api/images/v4/player/${accountId}?take=100`);
+                const feedProxy = encodeURIComponent(`https://api.rec.net/api/images/v4/player/${globallyScrapedId}?take=50`);
                 const feedRes = await fetch(`/api/upload?proxyUrl=${feedProxy}`);
-                const posts = await feedRes.json();
+                globallyScrapedPosts = await feedRes.json();
 
-                if (!posts || posts.length === 0) {
-                    alert("This user has no photos or post feeds logs published on rec.net!");
+                if (!globallyScrapedPosts || globallyScrapedPosts.length === 0) {
+                    alert("This user has zero shared images or timeline posts logged.");
                     resetScrapeButton();
                     return;
                 }
 
-                const zip = new JSZip();
-                const imageFolder = zip.folder("captured_images");
-                let textMetadataLog = [];
-
-                hintOverlay.innerText = `⏳ Bundling ${posts.length} profile history assets down to browser memory...`;
-
-                for (let i = 0; i < posts.length; i++) {
-                    const post = posts[i];
-                    textMetadataLog.push({
-                        imageId: post.imageId,
-                        caption: post.description || "",
-                        timestamp: post.createdAt,
-                        cheers: post.cheersCount,
-                        comments: post.commentCount
-                    });
-
-                    try {
-                        const rawImageProxy = encodeURIComponent(`https://img.rec.net/${post.imageName}`);
-                        const imageResponse = await fetch(`/api/upload?proxyUrl=${rawImageProxy}`);
-                        const fileBlob = await imageResponse.blob();
-                        imageFolder.file(`${post.imageId}.jpg`, fileBlob);
-                    } catch (imgErr) {
-                        console.error(`Skipped data entry index framework: ${post.imageId}`);
-                    }
-                }
-
-                zip.file("profile_feed_manifest.json", JSON.stringify(textMetadataLog, null, 2));
-
-                try {
-                    const avatarProxy = encodeURIComponent(`https://api.rec.net/api/images/v4/avatar?accountId=${accountId}`);
-                    const avatarResponse = await fetch(`/api/upload?proxyUrl=${avatarProxy}`);
-                    const avatarBlob = await avatarResponse.blob();
-                    zip.file("avatar_render.png", avatarBlob);
-                } catch (avErr) {}
-
-                hintOverlay.innerText = "⏳ Packaging time capsule structure maps...";
-                const finalZipBlob = await zip.generateAsync({ type: "blob" });
+                // Hydrate Web Timeline Header UI elements
+                document.getElementById('feedUserTag').innerText = `@${username}`;
+                document.getElementById('feedCountText').innerText = `${globallyScrapedPosts.length} historical memory nodes captured`;
                 
-                const downloadAnchor = document.createElement('a');
-                downloadAnchor.href = URL.createObjectURL(finalZipBlob);
-                downloadAnchor.download = `${username}_recnet_time_capsule.zip`;
-                document.body.appendChild(downloadAnchor);
-                downloadAnchor.click();
-                document.body.removeChild(downloadAnchor);
+                // Map local profile proxy render for avatar canvas frame
+                const avatarProxyUrl = `/api/upload?proxyUrl=${encodeURIComponent(`https://api.rec.net/api/images/v4/avatar?accountId=${globallyScrapedId}`)}`;
+                document.getElementById('feedUserAvatar').src = avatarProxyUrl;
 
-                hintOverlay.innerText = "✅ Time capsule saved successfully! Look in your Downloads folder.";
+                // Clear layout feed columns
+                const feedGrid = document.getElementById('feedGrid');
+                feedGrid.innerHTML = "";
+
+                // Dynamically build individual card structures
+                globallyScrapedPosts.forEach(post => {
+                    const postCard = document.createElement('div');
+                    postCard.className = 'feed-card';
+
+                    const rawImgUrl = `/api/upload?proxyUrl=${encodeURIComponent(`https://img.rec.net/${post.imageName}`)}`;
+                    const postedDate = new Date(post.createdAt).toLocaleDateString(undefined, { month: 'short', day: 'numeric', year: 'numeric' });
+
+                    postCard.innerHTML = `
+                        <div class="feed-img-wrapper">
+                            <img src="${rawImgUrl}" class="feed-card-img" loading="lazy" alt="RecRoom Photo">
+                        </div>
+                        <div class="feed-card-content">
+                            <p class="feed-card-caption">${post.description ? post.description : "<i>No caption provided.</i>"}</p>
+                            <div class="feed-card-footer">
+                                <span>📅 ${postedDate}</span>
+                                <span class="feed-cheers">🧡 ${post.cheersCount} Cheers</span>
+                            </div>
+                        </div>
+                    `;
+                    feedGrid.appendChild(postCard);
+                });
+
+                // Display feed wrapper
+                document.getElementById('feedWrapper').style.display = 'block';
+                document.getElementById('feedWrapper').scrollIntoView({ behavior: 'smooth' });
+                hintOverlay.innerText = "✅ Timeline loaded! Scroll down to explore or download the full asset bundle.";
 
             } catch (err) {
                 console.error(err);
-                alert("Network transaction failed. A connection error occurred during download rendering.");
+                alert("Network transaction failed during layout compilation framework setup lines.");
             } finally {
                 resetScrapeButton();
             }
         }
 
+        // --- NEW: SERVERLESS STREAM FILE ZIP COMPRESSION PIPELINE ---
+        async function downloadCompiledArchiveZip() {
+            if (!globallyScrapedPosts || globallyScrapedPosts.length === 0) return;
+
+            const zipBtn = document.getElementById('zipDownloadBtn');
+            zipBtn.innerText = "⏳ Compiling Zip Bundle...";
+            zipBtn.disabled = true;
+
+            try {
+                const zip = new JSZip();
+                const imageFolder = zip.folder("captured_images");
+                let textMetadataLog = [];
+
+                const BATCH_SIZE = 5;
+                for (let i = 0; i < globallyScrapedPosts.length; i += BATCH_SIZE) {
+                    const currentBatch = globallyScrapedPosts.slice(i, i + BATCH_SIZE);
+                    hintOverlay.innerText = `⏳ Packing bundle files (${i + 1}/${globallyScrapedPosts.length})...`;
+
+                    await Promise.all(currentBatch.map(async (post) => {
+                        textMetadataLog.push({
+                            imageId: post.imageId,
+                            caption: post.description || "",
+                            timestamp: post.createdAt,
+                            cheers: post.cheersCount,
+                            comments: post.commentCount
+                        });
+
+                        try {
+                            const rawImageProxy = encodeURIComponent(`https://img.rec.net/${post.imageName}`);
+                            const imageResponse = await fetch(`/api/upload?proxyUrl=${rawImageProxy}&t=${Date.now()}`);
+                            if (imageResponse.ok) {
+                                const fileBlob = await imageResponse.blob();
+                                imageFolder.file(`${post.imageId}.jpg`, fileBlob);
+                            }
+                        } catch (e) {}
+                    }));
+                }
+
+                zip.file("profile_feed_manifest.json", JSON.stringify(textMetadataLog, null, 2));
+
+                try {
+                    const avatarProxy = encodeURIComponent(`https://api.rec.net/api/images/v4/avatar?accountId=${globallyScrapedId}`);
+                    const avatarResponse = await fetch(`/api/upload?proxyUrl=${avatarProxy}`);
+                    if (avatarResponse.ok) {
+                        const avatarBlob = await avatarResponse.blob();
+                        zip.file("avatar_render.png", avatarBlob);
+                    }
+                } catch (e) {}
+
+                const finalZipBlob = await zip.generateAsync({ type: "blob", compression: "STORE" });
+                
+                const downloadAnchor = document.createElement('a');
+                downloadAnchor.href = URL.createObjectURL(finalZipBlob);
+                downloadAnchor.download = `${globallyScrapedUsername}_recnet_time_capsule.zip`;
+                document.body.appendChild(downloadAnchor);
+                downloadAnchor.click();
+                document.body.removeChild(downloadAnchor);
+
+                hintOverlay.innerText = "✅ Time capsule saved successfully! Check your computer downloads.";
+
+            } catch (err) {
+                alert("ZIP archive creation pipeline error.");
+            } finally {
+                zipBtn.innerText = "📥 Save Whole Archive (.ZIP)";
+                zipBtn.disabled = false;
+            }
+        }
+
         function resetScrapeButton() {
             const scrapeBtn = document.getElementById('scrapeBtn');
-            scrapeBtn.innerText = "Download My Profile Time Capsule";
+            scrapeBtn.innerText = "Load Profile Timeline";
             scrapeBtn.disabled = false;
         }
 
@@ -437,7 +535,6 @@
             let side = isLeftWall ? 'left' : 'right';
             let assignedZ = currentZ;
 
-            // Step 1: Lookup avatar directly in browser before hitting Vercel backend upload lines
             let fetchedAvatarUrl = "https://img.rec.net/default_avatar.png";
             try {
                 const accountRes = await fetch(`https://accounts.rec.net/account?username=${encodeURIComponent(username)}`);
@@ -455,7 +552,7 @@
                 zDepth: assignedZ,
                 fileName: `${username}.gltf`,
                 fileContent: selectedFileBase64,
-                avatarUrl: fetchedAvatarUrl // Securely attach our browser-resolved link
+                avatarUrl: fetchedAvatarUrl
             };
 
             try {
