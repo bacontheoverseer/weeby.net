@@ -67,7 +67,7 @@
 
     <main class="museum-container">
         <h1 class="hero-title">The Hall of Dorms</h1>
-        <p class="hero-subtitle">Upload your exported Rec Room layout below. It writes directly to GitHub and appends a permanent doorway to the exhibition hallway.</p>
+        <p class="hero-subtitle">Upload your exported Rec Room layout below. It passes securely to your repository and hooks a permanent entry doorway into the gallery line.</p>
 
         <div class="museum-viewport-wrapper">
             <button class="back-btn" id="exitRoomBtn" onclick="returnToHallway()">⬅ Return to Hallway</button>
@@ -75,7 +75,7 @@
             
             <div class="loading-overlay" id="loadingOverlay">
                 <div class="loading-text" id="loadingStatusText">Loading Room Assets...</div>
-                <p style="color: var(--text-muted);">Syncing live structures directly from GitHub</p>
+                <p style="color: var(--text-muted);">Syncing files securely via Vercel ecosystem hooks</p>
             </div>
 
             <div class="museum-window">
@@ -84,7 +84,6 @@
                     
                     <a-entity id="mainHallwayGroup">
                         <a-plane position="0 0 -250" rotation="-90 0 0" width="10" height="600" color="#855845"></a-plane>
-                        
                         <a-box position="-5 2.5 -250" width="0.1" height="5" depth="600" color="#f1f5f9"></a-box>
                         <a-box position="4.9 2.5 -250" width="0.1" height="5" depth="600" color="#f1f5f9"></a-box>
 
@@ -111,7 +110,7 @@
         <div class="forms-layout">
             <div class="upload-card">
                 <h3>Add Your Room to the Hall</h3>
-                <p>Upload your room file to permanently build your door inside the exhibition hallway gallery.</p>
+                <p>Upload your room file to permanently append a door entry space directly onto the corridor tracks.</p>
                 
                 <form id="uploadForm">
                     <div class="form-group">
@@ -127,22 +126,15 @@
                         </div>
                     </div>
 
-                    <button type="submit" class="btn-submit" id="submitBtn">Hang Sign & Save Room To GitHub</button>
+                    <button type="submit" class="btn-submit" id="submitBtn">Save Room Structure To GitHub</button>
                 </form>
             </div>
         </div>
     </main>
 
-    <footer>
-        <p>&copy; 2026 WeebyHost Museum Project. Pure Direct Repository Engine.</p>
-    </footer>
-
     <script>
-        // =====================================================================
         const GITHUB_USERNAME = "bacontheoverseer";
         const REPO_NAME = "weeby.net";
-        const GITHUB_TOKEN = "YOUR_GITHUB_PERSONAL_ACCESS_TOKEN_HERE"; // Insert your ghp_ Token here
-        // =====================================================================
         
         let currentZ = -6;
         let isLeftWall = true;
@@ -164,13 +156,11 @@
         fileInput.addEventListener('change', (e) => handleFile(e.target.files[0]));
 
         function handleFile(file) {
-            if (!file || !file.name.endsWith('.gltf')) { alert("Please attach a valid room .gltf configuration file!"); return; }
+            if (!file || !file.name.endsWith('.gltf')) { alert("Please attach a valid room .gltf setup file!"); return; }
             dropZoneText.innerText = `✅ Loaded: ${file.name}`;
             
             const reader = new FileReader();
-            reader.onload = (e) => {
-                selectedFileBase64 = e.target.result.split(',')[1];
-            };
+            reader.onload = (e) => { selectedFileBase64 = e.target.result.split(',')[1]; };
             reader.readAsDataURL(file);
         }
 
@@ -186,38 +176,27 @@
 
             const frame = document.createElement('a-box');
             frame.setAttribute('position', '0 1.3 0');
-            frame.setAttribute('width', '1.6');
-            frame.setAttribute('height', '2.6');
-            frame.setAttribute('depth', '0.2');
+            frame.setAttribute('width', '1.6'); frame.setAttribute('height', '2.6'); frame.setAttribute('depth', '0.2');
             frame.setAttribute('color', '#1e293b');
             doorGroup.appendChild(frame);
 
             const doorPanel = document.createElement('a-box');
             doorPanel.setAttribute('position', '0 1.3 0.05');
-            doorPanel.setAttribute('width', '1.4');
-            doorPanel.setAttribute('height', '2.4');
-            doorPanel.setAttribute('depth', '0.1');
-            doorPanel.setAttribute('color', '#ff5722'); 
-            doorPanel.setAttribute('class', 'clickable');
+            doorPanel.setAttribute('width', '1.4'); doorPanel.setAttribute('height', '2.4'); doorPanel.setAttribute('depth', '0.1');
+            doorPanel.setAttribute('color', '#ff5722'); doorPanel.setAttribute('class', 'clickable');
             
-            doorPanel.addEventListener('click', () => {
-                loadPlayerDormRoom(username, modelUrl);
-            });
+            doorPanel.addEventListener('click', () => { loadPlayerDormRoom(username, modelUrl); });
             doorGroup.appendChild(doorPanel);
 
             const signBacking = document.createElement('a-box');
             signBacking.setAttribute('position', '0 2.9 0.1');
-            signBacking.setAttribute('width', '1.8');
-            signBacking.setAttribute('height', '0.4');
-            signBacking.setAttribute('depth', '0.05');
+            signBacking.setAttribute('width', '1.8'); signBacking.setAttribute('height', '0.4'); signBacking.setAttribute('depth', '0.05');
             signBacking.setAttribute('color', '#0f172a');
             
             const textLabel = document.createElement('a-text');
             textLabel.setAttribute('value', `${username}'s Dorm`);
-            textLabel.setAttribute('position', '0 0 0.03');
-            textLabel.setAttribute('color', '#ffffff');
-            textLabel.setAttribute('align', 'center');
-            textLabel.setAttribute('width', '3.5');
+            textLabel.setAttribute('position', '0 0 0.03'); textLabel.setAttribute('color', '#ffffff');
+            textLabel.setAttribute('align', 'center'); textLabel.setAttribute('width', '3.5');
             
             signBacking.appendChild(textLabel);
             doorGroup.appendChild(signBacking);
@@ -239,7 +218,7 @@
 
                 loadingOverlay.style.display = 'none';
                 exitRoomBtn.style.display = 'block';
-                hintOverlay.innerText = "Explore this room layout! Click the return button to go back to the museum hall.";
+                hintOverlay.innerText = "Explore this room layout! Click the return button to go back out.";
             }, 500);
         }
 
@@ -249,21 +228,17 @@
 
             setTimeout(() => {
                 const roomContainer = document.getElementById('activeRoomModelContainer');
-                roomContainer.setAttribute('visible', 'false');
-                roomContainer.innerHTML = '';
-
+                roomContainer.setAttribute('visible', 'false'); roomContainer.innerHTML = '';
                 document.getElementById('mainHallwayGroup').setAttribute('visible', 'true');
 
                 const player = document.getElementById('playerRig');
                 player.setAttribute('position', '0 1.6 3');
 
-                loadingOverlay.style.display = 'none';
-                exitRoomBtn.style.display = 'none';
+                loadingOverlay.style.display = 'none'; exitRoomBtn.style.display = 'none';
                 hintOverlay.innerText = "⌨️ W,A,S,D to Walk • Drag Mouse to Look • Click on an Orange Door to Enter";
             }, 400);
         }
 
-        // --- CACHE-BUSTING PERMANENT REPOSITORY PARSER ---
         async function loadHallwayFromGitHub() {
             try {
                 const cacheBuster = new Date().getTime();
@@ -273,11 +248,10 @@
                 const files = await response.json();
                 
                 document.getElementById('hallwayDoors').innerHTML = "";
-                currentZ = -6;
-                isLeftWall = true;
+                currentZ = -6; isLeftWall = true;
 
                 for (let file of files) {
-                    if (file.name.endsWith('.json')) {
+                    if (file.name.endsWith('.json') && !file.name.startsWith('avatar_')) {
                         const fileDataRes = await fetch(`${file.download_url}?cb=${cacheBuster}`);
                         const data = await fileDataRes.json();
                         
@@ -293,81 +267,50 @@
                         if (!isLeftWall) currentZ -= 8; 
                     }
                 }
-            } catch (err) { console.error("Could not safely compile layout doors from repository:", err); }
+            } catch (err) { console.error("Could not safely map repository layout:", err); }
         }
 
-        // --- DIRECT PURE FRONT-END REPOSITORY WRITE MECHANISM ---
+        // --- DISPATCHES TO SECURE VERCEL TOKEN PASSTHROUGH ROUTE ---
         uploadForm.addEventListener('submit', async (e) => {
             e.preventDefault();
             const username = document.getElementById('usernameInput').value.trim();
-            if (!selectedFileBase64) { alert("Please attach a valid .gltf file first!"); return; }
+            if (!selectedFileBase64) { alert("Please attach a valid .gltf configuration first!"); return; }
 
-            submitBtn.innerText = "Pushing assets directly to GitHub repository...";
+            submitBtn.innerText = "Committing to repository via secure token handshake...";
             submitBtn.disabled = true;
 
             let side = isLeftWall ? 'left' : 'right';
-            let assignedZ = currentZ;
-
-            const jsonMetadata = {
-                username: username,
-                side: side,
-                zDepth: assignedZ,
-                fileName: `${username}.gltf`,
-                modelUrl: `https://raw.githubusercontent.com/${GITHUB_USERNAME}/${REPO_NAME}/main/registry/${username}.gltf`
-            };
-
-            const jsonBase64 = btoa(JSON.stringify(jsonMetadata, null, 2));
 
             try {
-                // 1. Commit and push the massive 3D room file (.gltf)
-                await fetch(`https://api.github.com/repos/${GITHUB_USERNAME}/${REPO_NAME}/contents/registry/${username}.gltf`, {
-                    method: 'PUT',
-                    headers: {
-                        'Authorization': `token ${GITHUB_TOKEN}`,
-                        'Content-Type': 'application/json'
-                    },
+                const response = await fetch('/api/upload-room', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({
-                        message: `Archive 3D model configuration for player ${username}`,
-                        content: selectedFileBase64
+                        username: username,
+                        side: side,
+                        zDepth: currentZ,
+                        fileContent: selectedFileBase64
                     })
                 });
 
-                // 2. Commit and push the structural hallway entry layout file (.json)
-                const jsonPush = await fetch(`https://api.github.com/repos/${GITHUB_USERNAME}/${REPO_NAME}/contents/registry/${username}.json`, {
-                    method: 'PUT',
-                    headers: {
-                        'Authorization': `token ${GITHUB_TOKEN}`,
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify({
-                        message: `Register hallway entry configuration for player ${username}`,
-                        content: jsonBase64
-                    })
-                });
-
-                if (jsonPush.ok) {
-                    alert("Assets successfully saved to your repository! Recompiling showroom...");
-                    // Delay slightly to give GitHub's data layer an extra half-second to catch up
-                    setTimeout(async () => {
-                        await loadHallwayFromGitHub();
-                    }, 1000);
+                if (response.ok) {
+                    alert("Room added successfully! Rebuilding your hallway tracker...");
+                    setTimeout(async () => { await loadHallwayFromGitHub(); }, 1200);
                     
                     uploadForm.reset();
                     dropZoneText.innerText = "📁 Click or Drag & Drop `.gltf` here";
                     selectedFileBase64 = null;
                 } else {
-                    alert("GitHub registry upload error. Double check that your token permissions are fully valid.");
+                    alert("Error syncing to your GitHub repository layout via Vercel.");
                 }
-
-            } catch (err) { 
-                alert("Network communication error while committing data structures."); 
-            } finally { 
-                submitBtn.disabled = false; 
-                submitBtn.innerText = "Hang Sign & Save Room To GitHub"; 
+            } catch (err) {
+                alert("Network error processing serverless stream tokens.");
+            } finally {
+                submitBtn.disabled = false;
+                submitBtn.innerText = "Save Room Structure To GitHub";
             }
         });
 
-        // Pull persistent repository data at startup
         loadHallwayFromGitHub();
     </script>
 </body>
