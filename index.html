@@ -28,6 +28,8 @@
         .navbar { display: flex; justify-content: space-between; align-items: center; padding: 1.5rem 4rem; max-width: 1400px; margin: 0 auto; }
         .logo { font-size: 1.5rem; font-weight: 800; color: var(--text-light); text-decoration: none; letter-spacing: -0.5px; }
         .logo span { color: var(--rr-orange); }
+        .nav-links a { color: var(--text-muted); text-decoration: none; font-weight: 700; font-size: 0.9rem; }
+        .nav-links a:hover { color: var(--text-light); }
 
         .museum-container { max-width: 1200px; margin: 1rem auto 4rem auto; padding: 0 2rem; text-align: center; }
         .hero-title { font-size: 3rem; font-weight: 800; letter-spacing: -1.5px; margin-bottom: 0.5rem; }
@@ -63,11 +65,14 @@
 
     <nav class="navbar">
         <a href="#" class="logo">Rec<span>Museum</span></a>
+        <div class="nav-links">
+            <a href="avatarwall.html">Go to 3D Avatar Wall ➡️</a>
+        </div>
     </nav>
 
     <main class="museum-container">
         <h1 class="hero-title">The Hall of Dorms</h1>
-        <p class="hero-subtitle">Upload your exported Rec Room layout below. It passes securely to your repository and hooks a permanent entry doorway into the gallery line.</p>
+        <p class="hero-subtitle">Upload your room structure files. Securely updates via your Vercel variables straight into your GitHub repository line.</p>
 
         <div class="museum-viewport-wrapper">
             <button class="back-btn" id="exitRoomBtn" onclick="returnToHallway()">⬅ Return to Hallway</button>
@@ -158,7 +163,6 @@
         function handleFile(file) {
             if (!file || !file.name.endsWith('.gltf')) { alert("Please attach a valid room .gltf setup file!"); return; }
             dropZoneText.innerText = `✅ Loaded: ${file.name}`;
-            
             const reader = new FileReader();
             reader.onload = (e) => { selectedFileBase64 = e.target.result.split(',')[1]; };
             reader.readAsDataURL(file);
@@ -270,11 +274,10 @@
             } catch (err) { console.error("Could not safely map repository layout:", err); }
         }
 
-        // --- DISPATCHES TO SECURE VERCEL TOKEN PASSTHROUGH ROUTE ---
         uploadForm.addEventListener('submit', async (e) => {
             e.preventDefault();
             const username = document.getElementById('usernameInput').value.trim();
-            if (!selectedFileBase64) { alert("Please attach a valid .gltf configuration first!"); return; }
+            if (!selectedFileBase64) { alert("Please attach a valid room .gltf configuration first!"); return; }
 
             submitBtn.innerText = "Committing to repository via secure token handshake...";
             submitBtn.disabled = true;
@@ -296,19 +299,14 @@
                 if (response.ok) {
                     alert("Room added successfully! Rebuilding your hallway tracker...");
                     setTimeout(async () => { await loadHallwayFromGitHub(); }, 1200);
-                    
                     uploadForm.reset();
                     dropZoneText.innerText = "📁 Click or Drag & Drop `.gltf` here";
                     selectedFileBase64 = null;
                 } else {
                     alert("Error syncing to your GitHub repository layout via Vercel.");
                 }
-            } catch (err) {
-                alert("Network error processing serverless stream tokens.");
-            } finally {
-                submitBtn.disabled = false;
-                submitBtn.innerText = "Save Room Structure To GitHub";
-            }
+            } catch (err) { alert("Network error processing serverless stream tokens."); }
+            finally { submitBtn.disabled = false; submitBtn.innerText = "Save Room Structure To GitHub"; }
         });
 
         loadHallwayFromGitHub();
