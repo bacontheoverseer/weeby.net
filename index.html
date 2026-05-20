@@ -2,346 +2,40 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>WeebyHost - Rec Room Dorm Museum</title>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-    
+    <title>WeebyHost - Museum</title>
     <script src="https://aframe.io/releases/1.4.0/aframe.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/gh/c-frame/aframe-extras@7.2.0/dist/aframe-extras.min.js"></script>
-    
-    <style>
-        :root {
-            --bg-dark: #121620;
-            --rr-orange: #ff5722;
-            --rr-orange-dark: #e64a19;
-            --text-light: #f8fafc;
-            --text-muted: #94a3b8;
-            --panel-bg: #1e293b;
-            --font-main: 'Plus Jakarta Sans', sans-serif;
-        }
-
-        * { box-sizing: border-box; margin: 0; padding: 0; }
-        body { background-color: var(--bg-dark); color: var(--text-light); font-family: var(--font-main); overflow-x: hidden; }
-        
-        .navbar { display: flex; justify-content: space-between; align-items: center; padding: 1.5rem 4rem; max-width: 1400px; margin: 0 auto; }
-        .logo { font-size: 1.5rem; font-weight: 800; color: var(--text-light); text-decoration: none; letter-spacing: -0.5px; }
-        .logo span { color: var(--rr-orange); }
-        .nav-links a { color: var(--text-muted); text-decoration: none; font-weight: 700; font-size: 0.9rem; transition: color 0.2s; }
-        .nav-links a:hover { color: var(--text-light); }
-
-        .museum-container { max-width: 1200px; margin: 1rem auto 4rem auto; padding: 0 2rem; text-align: center; }
-        .hero-title { font-size: 3rem; font-weight: 800; letter-spacing: -1.5px; margin-bottom: 0.5rem; }
-        .hero-subtitle { color: var(--text-muted); font-size: 1rem; max-width: 600px; margin: 0 auto 2.5rem auto; }
-
-        .museum-viewport-wrapper { background: #0f172a; border: 6px solid var(--panel-bg); border-radius: 28px; box-shadow: 0 25px 60px rgba(0,0,0,0.5); overflow: hidden; position: relative; margin-bottom: 3rem; }
-        .museum-window { width: 100%; height: 550px; display: block; }
-        .controls-hint { background-color: rgba(15, 23, 42, 0.9); backdrop-filter: blur(4px); color: white; padding: 0.7rem 1.3rem; border-radius: 50px; font-size: 0.8rem; font-weight: 700; position: absolute; bottom: 20px; left: 50%; transform: translateX(-50%); z-index: 10; pointer-events: none; border: 1px solid rgba(255,87,34,0.3); }
-
-        .loading-overlay { display: none; position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(18, 22, 32, 0.9); z-index: 15; justify-content: center; align-items: center; flex-direction: column; }
-        .loading-text { font-size: 1.5rem; font-weight: 800; color: var(--rr-orange); margin-bottom: 0.5rem; }
-        .back-btn { display: none; position: absolute; top: 20px; left: 20px; z-index: 20; background: var(--rr-orange); color: white; border: none; padding: 0.6rem 1.2rem; border-radius: 50px; font-weight: 700; cursor: pointer; }
-
-        .forms-layout { max-width: 600px; margin: 0 auto; text-align: left; }
-        .upload-card { background: var(--panel-bg); border-radius: 24px; padding: 2.5rem; box-shadow: 0 15px 35px rgba(0,0,0,0.2); }
-        .upload-card h3 { font-size: 1.3rem; font-weight: 800; margin-bottom: 0.5rem; color: white; }
-        .upload-card p { font-size: 0.9rem; color: var(--text-muted); margin-bottom: 1.5rem; }
-        
-        .form-group { margin-bottom: 1.2rem; }
-        .form-group label { display: block; font-size: 0.8rem; font-weight: 700; margin-bottom: 0.4rem; color: var(--text-muted); text-transform: uppercase; }
-        .form-group input[type="text"] { width: 100%; padding: 0.75rem 1rem; background: #0f172a; border: 2px solid #334155; color: white; border-radius: 12px; font-family: var(--font-main); font-weight: 600; outline: none; }
-        .form-group input[type="text"]:focus { border-color: var(--rr-orange); }
-        
-        .file-drop-zone { border: 2px dashed #475569; border-radius: 12px; padding: 1.5rem; text-align: center; background-color: #0f172a; cursor: pointer; font-weight: 600; color: var(--text-muted); }
-        .file-drop-zone.active { border-color: var(--rr-orange); background: rgba(255,87,34,0.05); }
-        
-        .btn-submit { background-color: var(--rr-orange); color: white; border: none; width: 100%; padding: 0.8rem; border-radius: 50px; font-weight: 700; font-size: 1rem; cursor: pointer; margin-top: 1rem; transition: background 0.2s; text-align: center; display: block; }
-        .btn-submit:hover { background-color: var(--rr-orange-dark); }
-        footer { text-align: center; padding: 3rem; color: var(--text-muted); font-size: 0.85rem; }
-    </style>
 </head>
 <body>
-
-    <nav class="navbar">
-        <a href="#" class="logo">Rec<span>Museum</span></a>
-        <div class="nav-links">
-            <a href="avatarwall.html">Go to 3D Avatar Board ➡️</a>
-        </div>
-    </nav>
-
-    <main class="museum-container">
-        <h1 class="hero-title">The Hall of Dorms</h1>
-        <p class="hero-subtitle">Upload your room structure files. Runs completely client-side via direct automated token sync pipelines.</p>
-
-        <div class="museum-viewport-wrapper">
-            <button class="back-btn" id="exitRoomBtn" onclick="returnToHallway()">⬅ Return to Hallway</button>
-            <div class="controls-hint" id="hintOverlay">⌨️ W,A,S,D to Walk • Drag Mouse to Look • Click on an Orange Door to Enter</div>
-            
-            <div class="loading-overlay" id="loadingOverlay">
-                <div class="loading-text" id="loadingStatusText">Loading Room Assets...</div>
-                <p style="color: var(--text-muted);">Syncing assets directly via GitHub API hooks</p>
-            </div>
-
-            <div class="museum-window">
-                <a-scene embedded id="museumScene" cursor="rayOrigin: mouse" raycaster="objects: .clickable">
-                    <a-sky color="#1a202c"></a-sky>
-                    
-                    <a-entity id="mainHallwayGroup">
-                        <a-plane position="0 0 -250" rotation="-90 0 0" width="10" height="600" color="#855845"></a-plane>
-                        <a-box position="-5 2.5 -250" width="0.1" height="5" depth="600" color="#f1f5f9"></a-box>
-                        <a-box position="4.9 2.5 -250" width="0.1" height="5" depth="600" color="#f1f5f9"></a-box>
-
-                        <a-box position="0 4.2 -2" width="4" height="1.0" depth="0.2" color="#ff5722">
-                            <a-text value="REC ROOM MUSEUM" position="0 0 0.12" color="#ffffff" align="center" width="8" font="kelsonsans" bold="true"></a-text>
-                        </a-box>
-
-                        <a-entity id="hallwayDoors"></a-entity>
-                    </a-entity>
-
-                    <a-entity id="activeRoomModelContainer" position="0 0 0" visible="false"></a-entity>
-                    <a-entity light="type: ambient; color: #777"></a-entity>
-                    <a-entity light="type: directional; color: #fff; intensity: 0.6" position="-1 2 1"></a-entity>
-
-                    <a-entity id="playerRig" position="0 0 3" movement-controls="controls: checkpoint, keyboard, touch; speed: 0.3">
-                        <a-entity camera look-controls position="0 1.6 0">
-                            <a-cursor id="mouseCursor" color="#ff5722" scale="0.8 0.8 0.8" raycaster="objects: .clickable"></a-cursor>
-                        </a-entity>
-                    </a-entity>
-                </a-scene>
-            </div>
-        </div>
-
-        <div class="forms-layout">
-            <div class="upload-card">
-                <h3>Add Your Room to the Hall</h3>
-                <p>Upload your room file to permanently append a door entry space directly onto the corridor tracks.</p>
-                
-                <form id="uploadForm">
-                    <div class="form-group">
-                        <label>Rec Room Username</label>
-                        <input type="text" id="usernameInput" placeholder="e.g., BaconPlayer" required>
-                    </div>
-                    
-                    <div class="form-group">
-                        <label>Exported Room Asset (.gltf)</label>
-                        <div class="file-drop-zone" id="dropZone">
-                            <span id="dropZoneText">📁 Click or Drag & Drop `.gltf` here</span>
-                            <input type="file" id="fileInput" accept=".gltf" style="display: none;" required>
-                        </div>
-                    </div>
-
-                    <button type="submit" class="btn-submit" id="submitBtn">Save Room Structure To GitHub</button>
-                </form>
-            </div>
-        </div>
-    </main>
+    <a href="avatarwall.html">Go to Avatar Wall ➡️</a>
+    <form id="uploadForm">
+        <input type="text" id="username" placeholder="Username" required>
+        <input type="file" id="file" accept=".gltf" required>
+        <button type="submit">Add to Museum</button>
+    </form>
 
     <script>
-        const GITHUB_USERNAME = "bacontheoverseer";
-        const REPO_NAME = "weeby.net";
-        
-        // Paste your GitHub Token inside the quotes below
-        const AUTH_TOKEN = "PASTE_YOUR_GITHUB_TOKEN_HERE";
+        const REPO = "bacontheoverseer/weeby.net";
+        // To trigger dispatch from browser, use a restricted PAT here
+        const PAT = "YOUR_DISPATCH_TOKEN"; 
 
-        let currentZ = -6;
-        let isLeftWall = true;
-        let selectedFileBase64 = null;
-
-        const dropZone = document.getElementById('dropZone');
-        const fileInput = document.getElementById('fileInput');
-        const dropZoneText = document.getElementById('dropZoneText');
-        const uploadForm = document.getElementById('uploadForm');
-        const submitBtn = document.getElementById('submitBtn');
-        const loadingOverlay = document.getElementById('loadingOverlay');
-        const exitRoomBtn = document.getElementById('exitRoomBtn');
-        const hintOverlay = document.getElementById('hintOverlay');
-
-        dropZone.addEventListener('click', () => fileInput.click());
-        dropZone.addEventListener('dragover', (e) => { e.preventDefault(); dropZone.classList.add('active'); });
-        dropZone.addEventListener('dragleave', () => dropZone.classList.remove('active'));
-        dropZone.addEventListener('drop', (e) => { e.preventDefault(); dropZone.classList.remove('active'); handleFile(e.dataTransfer.files[0]); });
-        fileInput.addEventListener('change', (e) => handleFile(e.target.files[0]));
-
-        function handleFile(file) {
-            if (!file || !file.name.endsWith('.gltf')) { alert("Please attach a valid room .gltf setup file!"); return; }
-            dropZoneText.innerText = `✅ Loaded: ${file.name}`;
-            const reader = new FileReader();
-            reader.onload = (e) => { selectedFileBase64 = e.target.result.split(',')[1]; };
-            reader.readAsDataURL(file);
-        }
-
-        function spawnDoorUI(username, zDepth, side, modelUrl) {
-            const container = document.getElementById('hallwayDoors');
-            const doorGroup = document.createElement('a-entity');
-            
-            let xPos = side === 'left' ? -4.8 : 4.8;
-            let doorRot = side === 'left' ? "0 90 0" : "0 -90 0";
-
-            doorGroup.setAttribute('position', `${xPos} 0 ${zDepth}`);
-            doorGroup.setAttribute('rotation', doorRot);
-
-            const frame = document.createElement('a-box');
-            frame.setAttribute('position', '0 1.3 0');
-            frame.setAttribute('width', '1.6'); frame.setAttribute('height', '2.6'); frame.setAttribute('depth', '0.2');
-            frame.setAttribute('color', '#1e293b');
-            doorGroup.appendChild(frame);
-
-            const doorPanel = document.createElement('a-box');
-            doorPanel.setAttribute('position', '0 1.3 0.05');
-            doorPanel.setAttribute('width', '1.4'); doorPanel.setAttribute('height', '2.4'); doorPanel.setAttribute('depth', '0.1');
-            doorPanel.setAttribute('color', '#ff5722'); doorPanel.setAttribute('class', 'clickable');
-            
-            doorPanel.addEventListener('click', () => { loadPlayerDormRoom(username, modelUrl); });
-            doorGroup.appendChild(doorPanel);
-
-            const signBacking = document.createElement('a-box');
-            signBacking.setAttribute('position', '0 2.9 0.1');
-            signBacking.setAttribute('width', '1.8'); signBacking.setAttribute('height', '0.4'); signBacking.setAttribute('depth', '0.05');
-            signBacking.setAttribute('color', '#0f172a');
-            
-            const textLabel = document.createElement('a-text');
-            textLabel.setAttribute('value', `${username}'s Dorm`);
-            textLabel.setAttribute('position', '0 0 0.03'); textLabel.setAttribute('color', '#ffffff');
-            textLabel.setAttribute('align', 'center'); textLabel.setAttribute('width', '3.5');
-            
-            signBacking.appendChild(textLabel);
-            doorGroup.appendChild(signBacking);
-            container.appendChild(doorGroup);
-        }
-
-        function loadPlayerDormRoom(username, modelUrl) {
-            loadingOverlay.style.display = 'flex';
-            document.getElementById('loadingStatusText').innerText = `Entering ${username}'s Room...`;
-
-            setTimeout(() => {
-                document.getElementById('mainHallwayGroup').setAttribute('visible', 'false');
-                const roomContainer = document.getElementById('activeRoomModelContainer');
-                roomContainer.setAttribute('visible', 'true');
-                roomContainer.innerHTML = `<a-gltf-model src="${modelUrl}" position="0 0 -5" scale="1 1 1"></a-gltf-model>`;
-
-                const player = document.getElementById('playerRig');
-                player.setAttribute('position', '0 1.6 -3');
-
-                loadingOverlay.style.display = 'none';
-                exitRoomBtn.style.display = 'block';
-                hintOverlay.innerText = "Explore this room layout! Click the return button to go back out.";
-            }, 500);
-        }
-
-        function returnToHallway() {
-            loadingOverlay.style.display = 'flex';
-            document.getElementById('loadingStatusText').innerText = "Returning to Museum Corridor...";
-
-            setTimeout(() => {
-                const roomContainer = document.getElementById('activeRoomModelContainer');
-                roomContainer.setAttribute('visible', 'false'); roomContainer.innerHTML = '';
-                document.getElementById('mainHallwayGroup').setAttribute('visible', 'true');
-
-                const player = document.getElementById('playerRig');
-                player.setAttribute('position', '0 1.6 3');
-
-                loadingOverlay.style.display = 'none'; exitRoomBtn.style.display = 'none';
-                hintOverlay.innerText = "⌨️ W,A,S,D to Walk • Drag Mouse to Look • Click on an Orange Door to Enter";
-            }, 400);
-        }
-
-        async function loadHallwayFromGitHub() {
-            try {
-                const cacheBuster = new Date().getTime();
-                const response = await fetch(`https://api.github.com/repos/${GITHUB_USERNAME}/${REPO_NAME}/contents/registry?cb=${cacheBuster}`);
-                
-                if (!response.ok) return;
-                const files = await response.json();
-                
-                document.getElementById('hallwayDoors').innerHTML = "";
-                currentZ = -6; isLeftWall = true;
-
-                for (let file of files) {
-                    if (file.name.endsWith('.json') && !file.name.startsWith('avatar_')) {
-                        const fileDataRes = await fetch(`${file.download_url}?cb=${cacheBuster}`);
-                        const data = await fileDataRes.json();
-                        
-                        const doorUsername = data.username || file.name.replace('.json', '');
-                        const doorZ = typeof data.zDepth === 'number' ? data.zDepth : currentZ;
-                        const doorSide = data.side || (isLeftWall ? 'left' : 'right');
-                        const doorModel = data.modelUrl || `https://raw.githubusercontent.com/${GITHUB_USERNAME}/${REPO_NAME}/main/registry/${data.fileName || doorUsername + '.gltf'}`;
-
-                        spawnDoorUI(doorUsername, doorZ, doorSide, doorModel);
-                        
-                        currentZ = doorZ;
-                        isLeftWall = doorSide !== 'left';
-                        if (!isLeftWall) currentZ -= 8; 
-                    }
-                }
-            } catch (err) { console.error("Could not safely map repository layout:", err); }
-        }
-
-        uploadForm.addEventListener('submit', async (e) => {
+        document.getElementById('uploadForm').onsubmit = async (e) => {
             e.preventDefault();
-            if (AUTH_TOKEN === "PASTE_YOUR_GITHUB_TOKEN_HERE" || !AUTH_TOKEN) {
-                alert("Error: Please open the index.html source code and replace AUTH_TOKEN with your actual GitHub token value.");
-                return;
-            }
-            const username = document.getElementById('usernameInput').value.trim();
-            if (!selectedFileBase64) { alert("Please attach a valid room .gltf configuration first!"); return; }
-
-            submitBtn.innerText = "Uploading room directly to GitHub...";
-            submitBtn.disabled = true;
-
-            const roomFilename = `${username}.gltf`;
-            const manifestFilename = `${username}.json`;
-            let side = isLeftWall ? 'left' : 'right';
-
-            const manifestPayload = {
-                username: username,
-                side: side,
-                zDepth: currentZ,
-                fileName: roomFilename
+            const file = document.getElementById('file').files[0];
+            const reader = new FileReader();
+            reader.onload = async (ev) => {
+                const content = ev.target.result.split(',')[1];
+                await fetch(`https://api.github.com/repos/${REPO}/dispatches`, {
+                    method: 'POST',
+                    headers: { 'Authorization': `token ${PAT}`, 'Accept': 'application/vnd.github.v3+json' },
+                    body: JSON.stringify({
+                        event_type: 'upload-room',
+                        client_payload: { filename: `${document.getElementById('username').value}.gltf`, content: content }
+                    })
+                });
+                alert("Upload sent to GitHub Actions!");
             };
-            const manifestBase64 = btoa(JSON.stringify(manifestPayload, null, 2));
-
-            try {
-                // 1. Push .gltf 3D mesh architecture up to repository tracks
-                await fetch(`https://api.github.com/repos/${GITHUB_USERNAME}/${REPO_NAME}/contents/registry/${roomFilename}`, {
-                    method: 'PUT',
-                    headers: {
-                        'Authorization': `token ${AUTH_TOKEN}`,
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify({
-                        message: `Upload 3D room structure for ${username}`,
-                        content: selectedFileBase64
-                    })
-                });
-
-                // 2. Add door reference manifest index node (.json)
-                const metaPush = await fetch(`https://api.github.com/repos/${GITHUB_USERNAME}/${REPO_NAME}/contents/registry/${manifestFilename}`, {
-                    method: 'PUT',
-                    headers: {
-                        'Authorization': `token ${AUTH_TOKEN}`,
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify({
-                        message: `Register museum door index tracking node for ${username}`,
-                        content: manifestBase64
-                    })
-                });
-
-                if (metaPush.ok) {
-                    alert("Room structure saved directly to your GitHub repo!");
-                    setTimeout(async () => { await loadHallwayFromGitHub(); }, 1200);
-                    uploadForm.reset();
-                    dropZoneText.innerText = "📁 Click or Drag & Drop `.gltf` here";
-                    selectedFileBase64 = null;
-                } else {
-                    alert("GitHub API rejected request. Check your hardcoded token permissions.");
-                }
-            } catch (err) { alert("Network error logging directly to repository arrays."); }
-            finally { submitBtn.disabled = false; submitBtn.innerText = "Save Room Structure To GitHub"; }
-        });
-
-        loadHallwayFromGitHub();
+            reader.readAsDataURL(file);
+        };
     </script>
 </body>
 </html>
