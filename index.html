@@ -230,7 +230,16 @@
             reader.readAsDataURL(file);
         }
 
-        // --- SEAMLESS DUAL-PROXY FALLBACK TIMELINE COMPILER ---
+        // --- HIGH-AVAILABILITY MULTI-PROXY CORRIDOR ENGINE ---
+        async function fetchWithTimeout(resource, options = {}) {
+            const { timeout = 4000 } = options;
+            const controller = new AbortController();
+            const id = setTimeout(() => controller.abort(), timeout);
+            const response = await fetch(resource, { ...options, signal: controller.signal });
+            clearTimeout(id);
+            return response;
+        }
+
         async function runBrowserScraper() {
             const username = document.getElementById('scraperUsernameInput').value.trim();
             if (!username) { alert("Please type in a Rec Room username first!"); return; }
@@ -243,30 +252,33 @@
             let accountData = null;
             const accountUrl = `https://accounts.rec.net/account?username=${encodeURIComponent(username)}`;
 
-            // --- STEP 1: ACCOUNT LOOKUP ---
+            // --- STEP 1: ACCOUNT LOOKUP PIPELINE ---
             try {
-                const response = await fetch(`https://api.allorigins.win/get?url=${encodeURIComponent(accountUrl)}`);
+                const response = await fetchWithTimeout(`https://api.allorigins.win/get?url=${encodeURIComponent(accountUrl)}`, { timeout: 3500 });
                 if (response.ok) {
                     const wrapper = await response.json();
                     if (wrapper.contents) accountData = JSON.parse(wrapper.contents);
                 }
-            } catch (primaryErr) {
-                console.log("AllOrigins failed or timed out. Engaging secondary proxy corridor...");
+            } catch (err) { console.log("Primary routing node delayed. Swapping to secondary lane..."); }
+
+            if (!accountData) {
+                try {
+                    const response = await fetchWithTimeout(`https://proxy.cors.sh/${accountUrl}`, { timeout: 4000 });
+                    if (response.ok) accountData = await response.json();
+                } catch (err) { console.log("Secondary routing node choked. Swapping to tertiary emergency bypass..."); }
             }
 
             if (!accountData) {
                 try {
-                    const fallbackRes = await fetch(`https://corsproxy.io/?url=${encodeURIComponent(accountUrl)}`);
-                    if (fallbackRes.ok) {
-                        accountData = await fallbackRes.json();
-                    }
-                } catch (fallbackErr) {
-                    console.error("Both proxy nodes failed to respond.", fallbackErr);
-                }
+                    const response = await fetchWithTimeout(`https://cors-anywhere.herokuapp.com/${accountUrl}`, {
+                        headers: { 'X-Requested-With': 'XMLHttpRequest' }
+                    });
+                    if (response.ok) accountData = await response.json();
+                } catch (err) { console.error("All public endpoint corridors are congested.", err); }
             }
 
             if (!accountData) {
-                alert("The lookup handshake timed out across all active nodes. Verify your connection or username.");
+                alert("The lookup handshake timed out across all active channels. Try toggling your Wi-Fi/cellular connection or check the spelling.");
                 resetScrapeButton();
                 return;
             }
@@ -284,26 +296,29 @@
             const feedUrl = `https://api.rec.net/api/images/v4/player/${globallyScrapedId}?take=35`;
             let feedData = null;
 
-            // --- STEP 2: TIMELINE FEED MANIFEST ---
+            // --- STEP 2: TIMELINE MANIFEST PIPELINE ---
             try {
-                const feedRes = await fetch(`https://api.allorigins.win/get?url=${encodeURIComponent(feedUrl)}`);
-                if (feedRes.ok) {
-                    const wrapperFeed = await feedRes.json();
+                const response = await fetchWithTimeout(`https://api.allorigins.win/get?url=${encodeURIComponent(feedUrl)}`, { timeout: 3500 });
+                if (response.ok) {
+                    const wrapperFeed = await response.json();
                     if (wrapperFeed.contents) feedData = JSON.parse(wrapperFeed.contents);
                 }
-            } catch (e) {
-                console.log("AllOrigins feed lookup failed. Falling back to secondary node...");
+            } catch (e) {}
+
+            if (!feedData) {
+                try {
+                    const response = await fetchWithTimeout(`https://proxy.cors.sh/${feedUrl}`, { timeout: 4000 });
+                    if (response.ok) feedData = await response.json();
+                } catch (e) {}
             }
 
             if (!feedData) {
                 try {
-                    const fallbackFeedRes = await fetch(`https://corsproxy.io/?url=${encodeURIComponent(feedUrl)}`);
-                    if (fallbackFeedRes.ok) {
-                        feedData = await fallbackFeedRes.json();
-                    }
-                } catch (err) {
-                    console.error("Timeline retrieval completely blocked.");
-                }
+                    const response = await fetchWithTimeout(`https://cors-anywhere.herokuapp.com/${feedUrl}`, {
+                        headers: { 'X-Requested-With': 'XMLHttpRequest' }
+                    });
+                    if (response.ok) feedData = await response.json();
+                } catch (e) {}
             }
 
             globallyScrapedPosts = feedData;
@@ -314,7 +329,7 @@
                 return;
             }
 
-            // --- STEP 3: RENDER RENDERING ENGINE LAYOUT ---
+            // --- STEP 3: RENDER PROFILE LAYOUT ---
             document.getElementById('feedUserTag').innerText = `@${username}`;
             document.getElementById('feedCountText').innerText = `${globallyScrapedPosts.length} historical memory nodes captured`;
             document.getElementById('feedUserAvatar').src = `https://api.rec.net/api/images/v4/avatar?accountId=${globallyScrapedId}`;
@@ -578,7 +593,7 @@
             let fetchedAvatarUrl = "https://img.rec.net/default_avatar.png";
             try {
                 const rawTargetUrl = `https://accounts.rec.net/account?username=${encodeURIComponent(username)}`;
-                const accountRes = await fetch(`https://api.allorigins.win/get?url=${encodeURIComponent(rawTargetUrl)}`);
+                const accountRes = await fetchWithTimeout(`https://api.allorigins.win/get?url=${encodeURIComponent(rawTargetUrl)}`, { timeout: 3500 });
                 if (accountRes.ok) {
                     const wrapperData = await accountRes.json();
                     if (wrapperData.contents) {
