@@ -2,283 +2,38 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>WeebyHost - Rec Room 3D Avatar Wall</title>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-    
-    <script type="module" src="https://ajax.googleapis.com/ajax/libs/model-viewer/3.4.0/model-viewer.min.js"></script>
-    
-    <style>
-        :root {
-            --bg-dark: #121620;
-            --rr-orange: #ff5722;
-            --rr-orange-dark: #e64a19;
-            --text-light: #f8fafc;
-            --text-muted: #94a3b8;
-            --panel-bg: #1e293b;
-            --font-main: 'Plus Jakarta Sans', sans-serif;
-        }
-
-        * { box-sizing: border-box; margin: 0; padding: 0; }
-        body { background-color: var(--bg-dark); color: var(--text-light); font-family: var(--font-main); min-height: 100vh; display: flex; flex-direction: column; }
-        
-        .navbar { display: flex; justify-content: space-between; align-items: center; padding: 1.5rem 4rem; max-width: 1400px; width: 100%; margin: 0 auto; }
-        .logo { font-size: 1.5rem; font-weight: 800; color: var(--text-light); text-decoration: none; letter-spacing: -0.5px; }
-        .logo span { color: var(--rr-orange); }
-        .nav-links a { color: var(--text-muted); text-decoration: none; font-weight: 700; font-size: 0.9rem; }
-        .nav-links a:hover { color: var(--text-light); }
-
-        .container { max-width: 1200px; width: 100%; margin: 0 auto; padding: 0 2rem; flex: 1; text-align: center; }
-        .hero-title { font-size: 3rem; font-weight: 800; letter-spacing: -1.5px; margin-bottom: 0.5rem; }
-        .hero-subtitle { color: var(--text-muted); font-size: 1rem; max-width: 600px; margin: 0 auto 2.5rem auto; }
-
-        /* THE DRAGGABLE PLATFORM CANVAS */
-        .wall-canvas { background: #0f172a; border: 4px solid var(--panel-bg); border-radius: 28px; min-height: 550px; position: relative; margin-bottom: 3rem; overflow: hidden; box-shadow: inset 0 4px 20px rgba(0,0,0,0.4); }
-        .grid-background { position: absolute; width: 100%; height: 100%; top: 0; left: 0; background-size: 40px 40px; background-image: linear-gradient(to right, rgba(51, 65, 85, 0.15) 1px, transparent 1px), linear-gradient(to bottom, rgba(51, 65, 85, 0.15) 1px, transparent 1px); pointer-events: none; }
-
-        /* INTERACTIVE 3D COMPONENT CARDS */
-        .avatar-card { position: absolute; background: var(--panel-bg); padding: 1rem; border-radius: 20px; box-shadow: 0 10px 25px rgba(0,0,0,0.3); width: 180px; display: flex; flex-direction: column; align-items: center; border: 2px solid transparent; touch-action: none; }
-        .card-handle { width: 100%; cursor: grab; display: flex; flex-direction: column; align-items: center; padding-bottom: 0.4rem; }
-        .card-handle:active { cursor: grabbing; }
-        .avatar-card:focus-within { border-color: var(--rr-orange); box-shadow: 0 15px 35px rgba(0,0,0,0.5); }
-        
-        .avatar-name { font-size: 0.85rem; font-weight: 700; color: white; text-overflow: ellipsis; overflow: hidden; white-space: nowrap; width: 100%; text-align: center; }
-        
-        /* HOUSES THE GOOGLE MODEL-VIEWER EMBED */
-        .avatar-frame { width: 140px; height: 160px; border-radius: 14px; background: #0f172a; border: 2px solid #334155; overflow: hidden; position: relative; }
-        model-viewer { width: 100%; height: 100%; --poster-color: transparent; }
-
-        /* UPLOAD COMPONENT FORMS */
-        .upload-layout { max-width: 500px; margin: 0 auto 4rem auto; text-align: left; }
-        .upload-card { background: var(--panel-bg); border-radius: 24px; padding: 2.5rem; box-shadow: 0 15px 35px rgba(0,0,0,0.2); }
-        .upload-card h3 { font-size: 1.3rem; font-weight: 800; margin-bottom: 0.5rem; color: white; }
-        .upload-card p { font-size: 0.9rem; color: var(--text-muted); margin-bottom: 1.5rem; }
-        
-        .form-group { margin-bottom: 1.2rem; }
-        .form-group label { display: block; font-size: 0.8rem; font-weight: 700; margin-bottom: 0.4rem; color: var(--text-muted); text-transform: uppercase; }
-        .form-group input[type="text"] { width: 100%; padding: 0.75rem 1rem; background: #0f172a; border: 2px solid #334155; color: white; border-radius: 12px; font-family: var(--font-main); font-weight: 600; outline: none; }
-        .form-group input[type="text"]:focus { border-color: var(--rr-orange); }
-        
-        .file-drop-zone { border: 2px dashed #475569; border-radius: 12px; padding: 1.5rem; text-align: center; background-color: #0f172a; cursor: pointer; font-weight: 600; color: var(--text-muted); }
-        .file-drop-zone.active { border-color: var(--rr-orange); background: rgba(255,87,34,0.05); }
-        
-        .btn-submit { background-color: var(--rr-orange); color: white; border: none; width: 100%; padding: 0.8rem; border-radius: 50px; font-weight: 700; font-size: 1rem; cursor: pointer; margin-top: 1rem; transition: background 0.2s; text-align: center; display: block; }
-        .btn-submit:hover { background-color: var(--rr-orange-dark); }
-        footer { text-align: center; padding: 3rem; color: var(--text-muted); font-size: 0.85rem; border-top: 2px solid #1e293b; margin-top: auto; }
-    </style>
+    <title>WeebyHost - Avatar Wall</title>
 </head>
 <body>
-
-    <nav class="navbar">
-        <a href="#" class="logo">Rec<span>Museum</span></a>
-        <div class="nav-links">
-            <a href="index.html">⬅ Back to 3D Museum Hallway</a>
-        </div>
-    </nav>
-
-    <main class="container">
-        <h1 class="hero-title">The 3D Avatar Board</h1>
-        <p class="hero-subtitle">Upload your character file (.gltf / .glb). Drag items to rearrange layout files, or use your mouse inside frames to spin them!</p>
-
-        <div class="wall-canvas" id="wallCanvas">
-            <div class="grid-background"></div>
-        </div>
-
-        <div class="upload-layout">
-            <div class="upload-card">
-                <h3>Pin Your 3D Avatar to the Wall</h3>
-                <p>Upload your actual exported Rec Room 3D mesh model file.</p>
-                
-                <form id="avatarUploadForm">
-                    <div class="form-group">
-                        <label>Rec Room Handle</label>
-                        <input type="text" id="usernameInput" placeholder="e.g., BaconPlayer" required>
-                    </div>
-                    
-                    <div class="form-group">
-                        <label>Avatar Mesh Asset (.gltf, .glb)</label>
-                        <div class="file-drop-zone" id="dropZone">
-                            <span id="dropZoneText">📁 Click or Drop 3D File here</span>
-                            <input type="file" id="fileInput" accept=".gltf,.glb" style="display: none;" required>
-                        </div>
-                    </div>
-
-                    <button type="submit" class="btn-submit" id="submitBtn">Pin 3D Avatar On Board</button>
-                </form>
-            </div>
-        </div>
-    </main>
-
-    <footer>
-        <p>&copy; 2026 WeebyHost Museum Project. Model Viewer Matrix Layout.</p>
-    </footer>
+    <a href="index.html">⬅ Back to Museum</a>
+    <form id="avatarForm">
+        <input type="text" id="avatarUser" placeholder="Username" required>
+        <input type="file" id="avatarFile" accept=".glb" required>
+        <button type="submit">Pin Avatar</button>
+    </form>
 
     <script>
-        const GITHUB_USERNAME = "bacontheoverseer";
-        const REPO_NAME = "weeby.net";
+        const REPO = "bacontheoverseer/weeby.net";
+        const PAT = "YOUR_DISPATCH_TOKEN";
 
-        let selectedMeshBase64 = null;
-        const wallCanvas = document.getElementById('wallCanvas');
-        const dropZone = document.getElementById('dropZone');
-        const fileInput = document.getElementById('fileInput');
-        const dropZoneText = document.getElementById('dropZoneText');
-        const avatarForm = document.getElementById('avatarUploadForm');
-        const submitBtn = document.getElementById('submitBtn');
-
-        dropZone.addEventListener('click', () => fileInput.click());
-        dropZone.addEventListener('dragover', (e) => { e.preventDefault(); dropZone.classList.add('active'); });
-        dropZone.addEventListener('dragleave', () => dropZone.classList.remove('active'));
-        dropZone.addEventListener('drop', (e) => { e.preventDefault(); dropZone.classList.remove('active'); handleFile(e.dataTransfer.files[0]); });
-        fileInput.addEventListener('change', (e) => handleFile(e.target.files[0]));
-
-        function handleFile(file) {
-            if (!file || (!file.name.endsWith('.gltf') && !file.name.endsWith('.glb'))) { 
-                alert("Please attach a valid 3D .gltf or .glb avatar file!"); return; 
-            }
-            dropZoneText.innerText = `✅ Loaded Model: ${file.name}`;
-            const reader = new FileReader();
-            reader.onload = (e) => { selectedMeshBase64 = e.target.result.split(',')[1]; };
-            reader.readAsDataURL(file);
-        }
-
-        // Spawns interactive panels using native interactive Google <model-viewer> tags
-        function buildAvatarOnWall(username, model3dUrl, xPos, yPos) {
-            const card = document.createElement('div');
-            card.className = 'avatar-card';
-            card.style.left = `${xPos}px`; card.style.top = `${yPos}px`;
-
-            // Top drag handle zone so dragging doesn't fight with the 3D orbit viewer spins
-            const handle = document.createElement('div');
-            handle.className = 'card-handle';
-            
-            const label = document.createElement('div');
-            label.className = 'avatar-name'; label.innerText = `@${username}`;
-            handle.appendChild(label);
-            card.appendChild(handle);
-
-            const frame = document.createElement('div');
-            frame.className = 'avatar-frame';
-
-            // Insert Google's 3D component engine directly into our grid card
-            const viewer = document.createElement('model-viewer');
-            viewer.setAttribute('src', model3dUrl);
-            viewer.setAttribute('camera-controls', '');
-            viewer.setAttribute('auto-rotate', ''); // Spins slowly on stand-by
-            viewer.setAttribute('autoplay', '');     // Plays built-in animations natively
-            viewer.setAttribute('shadow-intensity', '1');
-            viewer.setAttribute('interaction-prompt', 'none');
-            
-            frame.appendChild(viewer);
-            card.appendChild(frame);
-            
-            initDragLogic(card, handle);
-            wallCanvas.appendChild(card);
-        }
-
-        function initDragLogic(element, handleZone) {
-            let activeX = 0, activeY = 0, currentX = 0, currentY = 0;
-            handleZone.addEventListener('mousedown', dragStart);
-            handleZone.addEventListener('touchstart', dragStart, { passive: false });
-
-            function dragStart(e) {
-                e.preventDefault();
-                let clientX = e.type === 'touchstart' ? e.touches[0].clientX : e.clientX;
-                let clientY = e.type === 'touchstart' ? e.touches[0].clientY : e.clientY;
-                currentX = clientX; currentY = clientY;
-                document.addEventListener('mousemove', dragMove);
-                document.addEventListener('mouseup', dragEnd);
-                document.addEventListener('touchmove', dragMove, { passive: false });
-                document.addEventListener('touchend', dragEnd);
-            }
-
-            function dragMove(e) {
-                e.preventDefault();
-                let clientX = e.type === 'touchmove' ? e.touches[0].clientX : e.clientX;
-                let clientY = e.type === 'touchmove' ? e.touches[0].clientY : e.clientY;
-
-                activeX = currentX - clientX; activeY = currentY - clientY;
-                currentX = clientX; currentY = clientY;
-
-                let nextLeft = element.offsetLeft - activeX;
-                let nextTop = element.offsetTop - activeY;
-
-                const maxLeft = wallCanvas.clientWidth - element.clientWidth;
-                const maxTop = wallCanvas.clientHeight - element.clientHeight;
-
-                if (nextLeft < 10) nextLeft = 10; if (nextTop < 10) nextTop = 10;
-                if (nextLeft > maxLeft - 10) nextLeft = maxLeft - 10; if (nextTop > maxTop - 10) nextTop = maxTop - 10;
-
-                element.style.left = `${nextLeft}px`; element.style.top = `${nextTop}px`;
-            }
-
-            function dragEnd() {
-                document.removeEventListener('mousemove', dragMove);
-                document.removeEventListener('mouseup', dragEnd);
-                document.removeEventListener('touchmove', dragMove);
-                document.removeEventListener('touchend', dragEnd);
-            }
-        }
-
-        async function fetchAvatarsFromRegistry() {
-            try {
-                const cacheBuster = new Date().getTime();
-                const response = await fetch(`https://api.github.com/repos/${GITHUB_USERNAME}/${REPO_NAME}/contents/registry?cb=${cacheBuster}`);
-                if (!response.ok) return;
-                const files = await response.json();
-
-                const cards = wallCanvas.querySelectorAll('.avatar-card');
-                cards.forEach(c => c.remove());
-
-                let startX = 40, startY = 40;
-
-                for (let file of files) {
-                    if (file.name.startsWith('avatar_') && file.name.endsWith('.json')) {
-                        const dataRes = await fetch(`${file.download_url}?cb=${cacheBuster}`);
-                        const data = await dataRes.json();
-
-                        buildAvatarOnWall(data.username, data.profilePicUrl, startX, startY);
-
-                        startX += 210;
-                        if (startX > wallCanvas.clientWidth - 190) { startX = 40; startY += 230; }
-                    }
-                }
-            } catch (err) { console.error("Error displaying board 3D models:", err); }
-        }
-
-        avatarForm.addEventListener('submit', async (e) => {
+        document.getElementById('avatarForm').onsubmit = async (e) => {
             e.preventDefault();
-            const username = document.getElementById('usernameInput').value.trim();
-            if (!selectedMeshBase64) { alert("Please drop or choose a 3D avatar file first!"); return; }
-
-            submitBtn.innerText = "Securing 3D model files to repository...";
-            submitBtn.disabled = true;
-
-            try {
-                const response = await fetch('/api/upload-avatar', {
+            const file = document.getElementById('avatarFile').files[0];
+            const reader = new FileReader();
+            reader.onload = async (ev) => {
+                const content = ev.target.result.split(',')[1];
+                await fetch(`https://api.github.com/repos/${REPO}/dispatches`, {
                     method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
+                    headers: { 'Authorization': `token ${PAT}`, 'Accept': 'application/vnd.github.v3+json' },
                     body: JSON.stringify({
-                        username: username,
-                        fileContent: selectedMeshBase64
+                        event_type: 'upload-avatar',
+                        client_payload: { filename: `avatar_${document.getElementById('avatarUser').value}.glb`, content: content }
                     })
                 });
-
-                if (response.ok) {
-                    alert("3D Avatar successfully added to the board! Updating components...");
-                    setTimeout(async () => { await fetchAvatarsFromRegistry(); }, 1200);
-                    avatarForm.reset();
-                    dropZoneText.innerText = "📁 Click or Drop 3D File here";
-                    selectedMeshBase64 = null;
-                } else {
-                    alert("Error processing your upload via Vercel api token nodes.");
-                }
-            } catch (err) { alert("Network communication timeout handling file writes."); }
-            finally { submitBtn.disabled = false; submitBtn.innerText = "Pin 3D Avatar On Board"; }
-        });
-
-        fetchAvatarsFromRegistry();
+                alert("Avatar upload triggered via Action!");
+            };
+            reader.readAsDataURL(file);
+        };
     </script>
 </body>
 </html>
