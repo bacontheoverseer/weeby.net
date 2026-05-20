@@ -230,7 +230,7 @@
             reader.readAsDataURL(file);
         }
 
-        // --- BULLETPROOF CORS-BYPASSED TIMELINE COMPILER ---
+        // --- QUADRUPLE-CHECKED PRESERVED PARAMETER TIMELINE COMPILER ---
         async function runBrowserScraper() {
             const username = document.getElementById('scraperUsernameInput').value.trim();
             if (!username) { alert("Please type in a Rec Room username first!"); return; }
@@ -238,25 +238,32 @@
             const scrapeBtn = document.getElementById('scrapeBtn');
             scrapeBtn.innerText = "⏳ Reading Profile...";
             scrapeBtn.disabled = true;
-            hintOverlay.innerText = "⏳ Routing through open CORS network nodes...";
+            hintOverlay.innerText = "⏳ Routing credentials through unblocked parameter lanes...";
             
             try {
-                // Route target URLs through corsproxy.io to resolve browser origin security policies
+                // Route via AllOrigins string wrapper to perfectly protect url variables
                 const accountUrl = `https://accounts.rec.net/account?username=${encodeURIComponent(username)}`;
-                const accountRes = await fetch(`https://corsproxy.io/?${encodeURIComponent(accountUrl)}`);
+                const accountRes = await fetch(`https://api.allorigins.win/get?url=${encodeURIComponent(accountUrl)}`);
                 
                 if (!accountRes.ok) {
-                    alert("Account lookup failed! The profile could not be located on the live rec.net server cluster.");
+                    alert("Account lookup failed! Could not communicate with data extraction lane.");
                     resetScrapeButton();
                     return;
                 }
                 
-                const accountData = await accountRes.json();
+                const wrapperData = await accountRes.json();
+                if (!wrapperData.contents) {
+                    alert("Account layout not found. Verify you are using the static registration login handle.");
+                    resetScrapeButton();
+                    return;
+                }
+
+                const accountData = JSON.parse(wrapperData.contents);
                 globallyScrapedId = accountData.accountId;
                 globallyScrapedUsername = username;
 
                 if (!globallyScrapedId) {
-                    alert("No valid account ID signature returned for this user.");
+                    alert("No internal ID mapping found for this handle.");
                     resetScrapeButton();
                     return;
                 }
@@ -264,14 +271,16 @@
                 hintOverlay.innerText = "⏳ Compiling historical photo timeline indexes...";
 
                 const feedUrl = `https://api.rec.net/api/images/v4/player/${globallyScrapedId}?take=35`;
-                const feedRes = await fetch(`https://corsproxy.io/?${encodeURIComponent(feedUrl)}`);
+                const feedRes = await fetch(`https://api.allorigins.win/get?url=${encodeURIComponent(feedUrl)}`);
                 
                 if (!feedRes.ok) {
-                    alert("Failed to grab the timeline feed manifest from the server network.");
+                    alert("Failed to grab the timeline feed manifest.");
                     resetScrapeButton();
                     return;
                 }
-                globallyScrapedPosts = await feedRes.json();
+
+                const wrapperFeed = await feedRes.json();
+                globallyScrapedPosts = JSON.parse(wrapperFeed.contents);
 
                 if (!globallyScrapedPosts || globallyScrapedPosts.length === 0) {
                     alert("This user has zero shared images or timeline posts logged.");
@@ -282,7 +291,7 @@
                 document.getElementById('feedUserTag').innerText = `@${username}`;
                 document.getElementById('feedCountText').innerText = `${globallyScrapedPosts.length} historical memory nodes captured`;
                 
-                // Native image rendering doesn't hit CORS blocks, so we look up pictures directly
+                // Native images load safely cross-origin on img tags
                 document.getElementById('feedUserAvatar').src = `https://api.rec.net/api/images/v4/avatar?accountId=${globallyScrapedId}`;
 
                 const feedGrid = document.getElementById('feedGrid');
@@ -320,7 +329,7 @@
 
             } catch (err) {
                 console.error(err);
-                alert("CORS communication corridor blocked. Check console logging outputs.");
+                alert("The lookup handshake timed out. The profile layout could not be verified.");
             } finally {
                 resetScrapeButton();
             }
@@ -339,7 +348,6 @@
                 const imageFolder = zip.folder("captured_images");
                 let textMetadataLog = [];
 
-                // Use the CORS proxy to allow JavaScript to successfully download image blobs for packing
                 const BATCH_SIZE = 4;
                 for (let i = 0; i < globallyScrapedPosts.length; i += BATCH_SIZE) {
                     const currentBatch = globallyScrapedPosts.slice(i, i + BATCH_SIZE);
@@ -356,9 +364,12 @@
 
                         try {
                             const rawTargetUrl = `https://img.rec.net/${post.imageName}`;
-                            const imageResponse = await fetch(`https://corsproxy.io/?${encodeURIComponent(rawTargetUrl)}`);
+                            const imageResponse = await fetch(`https://api.allorigins.win/get?url=${encodeURIComponent(rawTargetUrl)}`);
                             if (imageResponse.ok) {
-                                const fileBlob = await imageResponse.blob();
+                                const wrapperImg = await imageResponse.json();
+                                // Converting image string back into downloable assets
+                                const blobRes = await fetch(wrapperImg.contents);
+                                const fileBlob = await blobRes.blob();
                                 imageFolder.file(`${post.imageId}.jpg`, fileBlob);
                             }
                         } catch (e) {}
@@ -369,9 +380,11 @@
 
                 try {
                     const rawAvatarUrl = `https://api.rec.net/api/images/v4/avatar?accountId=${globallyScrapedId}`;
-                    const avatarResponse = await fetch(`https://corsproxy.io/?${encodeURIComponent(rawAvatarUrl)}`);
+                    const avatarResponse = await fetch(`https://api.allorigins.win/get?url=${encodeURIComponent(rawAvatarUrl)}`);
                     if (avatarResponse.ok) {
-                        const avatarBlob = await avatarResponse.blob();
+                        const wrapperAv = await avatarResponse.json();
+                        const blobRes = await fetch(wrapperAv.contents);
+                        const avatarBlob = await blobRes.blob();
                         zip.file("avatar_render.png", avatarBlob);
                     }
                 } catch (e) {}
@@ -546,13 +559,15 @@
 
             let fetchedAvatarUrl = "https://img.rec.net/default_avatar.png";
             try {
-                // Fetch avatar registration using the CORS proxy context
                 const rawTargetUrl = `https://accounts.rec.net/account?username=${encodeURIComponent(username)}`;
-                const accountRes = await fetch(`https://corsproxy.io/?${encodeURIComponent(rawTargetUrl)}`);
+                const accountRes = await fetch(`https://api.allorigins.win/get?url=${encodeURIComponent(rawTargetUrl)}`);
                 if (accountRes.ok) {
-                    const accountData = await accountRes.json();
-                    if (accountData && accountData.accountId) {
-                        fetchedAvatarUrl = `https://api.rec.net/api/images/v4/avatar?accountId=${accountData.accountId}`;
+                    const wrapperData = await accountRes.json();
+                    if (wrapperData.contents) {
+                        const accountData = JSON.parse(wrapperData.contents);
+                        if (accountData && accountData.accountId) {
+                            fetchedAvatarUrl = `https://api.rec.net/api/images/v4/avatar?accountId=${accountData.accountId}`;
+                        }
                     }
                 }
             } catch(e) { console.log("Reverting to default avatar asset marker"); }
