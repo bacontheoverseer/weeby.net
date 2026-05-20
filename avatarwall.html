@@ -3,34 +3,44 @@
 <head>
     <meta charset="UTF-8">
     <title>WeebyHost - Avatar Wall</title>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;700&display=swap" rel="stylesheet">
+    <script type="module" src="https://ajax.googleapis.com/ajax/libs/model-viewer/3.4.0/model-viewer.min.js"></script>
+    <style>
+        :root { --bg-dark: #121620; --rr-orange: #ff5722; --panel-bg: #1e293b; }
+        body { background-color: var(--bg-dark); color: white; font-family: 'Plus Jakarta Sans', sans-serif; }
+        .wall-canvas { width: 90%; height: 500px; margin: 2rem auto; background: #0f172a; border: 4px solid var(--panel-bg); border-radius: 28px; position: relative; }
+        .upload-card { max-width: 500px; margin: 2rem auto; background: var(--panel-bg); padding: 2rem; border-radius: 24px; }
+        button { background-color: var(--rr-orange); color: white; border: none; padding: 1rem; width: 100%; border-radius: 50px; }
+    </style>
 </head>
 <body>
-    <a href="index.html">⬅ Back to Museum</a>
-    <form id="avatarForm">
-        <input type="text" id="avatarUser" placeholder="Username" required>
-        <input type="file" id="avatarFile" accept=".glb" required>
-        <button type="submit">Pin Avatar</button>
-    </form>
-
+    <nav style="padding: 2rem;"><a href="index.html">⬅ Back to Museum</a></nav>
+    <div class="wall-canvas" id="wallCanvas"></div>
+    <div class="upload-card">
+        <h3>Pin 3D Avatar</h3>
+        <form id="avatarForm">
+            <input type="text" id="avatarUser" placeholder="Username" required>
+            <input type="file" id="avatarFile" accept=".glb" required>
+            <button type="submit">Pin to Board</button>
+        </form>
+    </div>
     <script>
         const REPO = "bacontheoverseer/weeby.net";
-        const PAT = "YOUR_DISPATCH_TOKEN";
-
+        const PAT = "YOUR_DISPATCH_TOKEN"; 
         document.getElementById('avatarForm').onsubmit = async (e) => {
             e.preventDefault();
             const file = document.getElementById('avatarFile').files[0];
             const reader = new FileReader();
             reader.onload = async (ev) => {
-                const content = ev.target.result.split(',')[1];
                 await fetch(`https://api.github.com/repos/${REPO}/dispatches`, {
                     method: 'POST',
                     headers: { 'Authorization': `token ${PAT}`, 'Accept': 'application/vnd.github.v3+json' },
                     body: JSON.stringify({
                         event_type: 'upload-avatar',
-                        client_payload: { filename: `avatar_${document.getElementById('avatarUser').value}.glb`, content: content }
+                        client_payload: { filename: `avatar_${document.getElementById('avatarUser').value}.glb`, content: ev.target.result.split(',')[1] }
                     })
                 });
-                alert("Avatar upload triggered via Action!");
+                alert("Avatar upload triggered!");
             };
             reader.readAsDataURL(file);
         };
