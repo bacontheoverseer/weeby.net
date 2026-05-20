@@ -10,6 +10,7 @@
     
     <script src="https://aframe.io/releases/1.4.0/aframe.min.js"></script>
     <script src="https://cdn.jsdelivr.net/gh/c-frame/aframe-extras@7.2.0/dist/aframe-extras.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
     
     <style>
         :root {
@@ -41,9 +42,11 @@
         .loading-text { font-size: 1.5rem; font-weight: 800; color: var(--rr-orange); margin-bottom: 0.5rem; }
         .back-btn { display: none; position: absolute; top: 20px; left: 20px; z-index: 20; background: var(--rr-orange); color: white; border: none; padding: 0.6rem 1.2rem; border-radius: 50px; font-weight: 700; cursor: pointer; }
 
-        .upload-card { background: var(--panel-bg); border-radius: 24px; padding: 2.5rem; max-width: 500px; margin: 0 auto; text-align: left; box-shadow: 0 15px 35px rgba(0,0,0,0.2); }
+        .forms-layout { display: flex; gap: 2rem; max-width: 1100px; margin: 0 auto; text-align: left; }
+        .upload-card { background: var(--panel-bg); border-radius: 24px; padding: 2.5rem; flex: 1; box-shadow: 0 15px 35px rgba(0,0,0,0.2); }
         .upload-card h3 { font-size: 1.3rem; font-weight: 800; margin-bottom: 0.5rem; color: white; }
         .upload-card p { font-size: 0.9rem; color: var(--text-muted); margin-bottom: 1.5rem; }
+        
         .form-group { margin-bottom: 1.2rem; }
         .form-group label { display: block; font-size: 0.8rem; font-weight: 700; margin-bottom: 0.4rem; color: var(--text-muted); text-transform: uppercase; }
         .form-group input[type="text"] { width: 100%; padding: 0.75rem 1rem; background: #0f172a; border: 2px solid #334155; color: white; border-radius: 12px; font-family: var(--font-main); font-weight: 600; outline: none; }
@@ -51,8 +54,11 @@
         
         .file-drop-zone { border: 2px dashed #475569; border-radius: 12px; padding: 1.5rem; text-align: center; background-color: #0f172a; cursor: pointer; font-weight: 600; color: var(--text-muted); }
         .file-drop-zone.active { border-color: var(--rr-orange); background: rgba(255,87,34,0.05); }
+        
         .btn-submit { background-color: var(--rr-orange); color: white; border: none; width: 100%; padding: 0.8rem; border-radius: 50px; font-weight: 700; font-size: 1rem; cursor: pointer; margin-top: 1rem; transition: background 0.2s; }
         .btn-submit:hover { background-color: var(--rr-orange-dark); }
+        .btn-secondary { background-color: #0f172a; border: 2px solid #334155; color: white; }
+        .btn-secondary:hover { background-color: #1e293b; border-color: var(--text-muted); }
         footer { text-align: center; padding: 3rem; color: var(--text-muted); font-size: 0.85rem; }
     </style>
 </head>
@@ -105,35 +111,46 @@
                         <a-entity camera look-controls position="0 1.6 0">
                             <a-cursor id="mouseCursor" color="#ff5722" scale="0.8 0.8 0.8" raycaster="objects: .clickable"></a-cursor>
                         </a-entity>
-
                         <a-entity laser-controls="hand: left" raycaster="objects: .clickable; far: 10; interval: 100"></a-entity>
-                        
                         <a-entity laser-controls="hand: right" raycaster="objects: .clickable; far: 10; interval: 100"></a-entity>
                     </a-entity>
                 </a-scene>
             </div>
         </div>
 
-        <div class="upload-card">
-            <h3>Add Your Room to the Hall</h3>
-            <p>Upload your exported `.gltf` bundle from your Steam files.</p>
-            
-            <form id="uploadForm">
-                <div class="form-group">
-                    <label>Rec Room Username</label>
-                    <input type="text" id="usernameInput" placeholder="e.g., CoolPlayerVR" required>
-                </div>
+        <div class="forms-layout">
+            <div class="upload-card">
+                <h3>Add Your Room to the Hall</h3>
+                <p>Upload your exported `.gltf` bundle from your Steam files.</p>
+                
+                <form id="uploadForm">
+                    <div class="form-group">
+                        <label>Rec Room Username</label>
+                        <input type="text" id="usernameInput" placeholder="e.g., CoolPlayerVR" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>Exported Room Asset (.gltf)</label>
+                        <div class="file-drop-zone" id="dropZone">
+                            <span id="dropZoneText">📁 Click or Drag & Drop `.gltf` here</span>
+                            <input type="file" id="fileInput" accept=".gltf" style="display: none;" required>
+                        </div>
+                    </div>
+
+                    <button type="submit" class="btn-submit" id="submitBtn">Hang Sign & Register Door</button>
+                </form>
+            </div>
+
+            <div class="upload-card">
+                <h3>Download Your Profile Backup</h3>
+                <p>Scrape and download your text posts, timeline logs, and original high-res feed pictures before the sunset date.</p>
                 
                 <div class="form-group">
-                    <label>Exported Room Asset (.gltf)</label>
-                    <div class="file-drop-zone" id="dropZone">
-                        <span id="dropZoneText">📁 Click or Drag & Drop `.gltf` here</span>
-                        <input type="file" id="fileInput" accept=".gltf" style="display: none;" required>
-                    </div>
+                    <label>Rec Room Account Name</label>
+                    <input type="text" id="scraperUsernameInput" placeholder="e.g., YourUsernameTag">
                 </div>
-
-                <button type="submit" class="btn-submit" id="submitBtn">Hang Sign & Register Door</button>
-            </form>
+                <button type="button" class="btn-submit btn-secondary" onclick="runBrowserScraper()">Download My Profile Time Capsule</button>
+            </div>
         </div>
     </main>
 
@@ -143,7 +160,6 @@
 
     <script>
         // =========================================================
-        // AUTOMATICALLY CONFIGURED TARGET DATA STRUCTURES:
         const GITHUB_USERNAME = "bacontheoverseer";
         const REPO_NAME = "weeby.net";
         // =========================================================
@@ -175,7 +191,102 @@
             reader.readAsDataURL(file);
         }
 
-        function spawnDoorUI(username, zDepth, side, modelUrl) {
+        // --- NEW: THE COMPLETE SERVERLESS BROWSER-SIDE PROFILE SCRAPER ---
+        async function runBrowserScraper() {
+            const username = document.getElementById('scraperUsernameInput').value.trim();
+            if (!username) { alert("Please type in a Rec Room username first!"); return; }
+
+            hintOverlay.innerText = "⏳ Connecting to Rec Room network data channels...";
+            
+            try {
+                // Step 1: Request Account Profile Node via our dynamic API passthrough proxy rule
+                const profileProxy = encodeURIComponent(`https://accounts.rec.net/account?username=${username}`);
+                const accountRes = await fetch(`/api/upload?proxyUrl=${profileProxy}`);
+                
+                if (!accountRes.ok) {
+                    alert("Account lookup failed. Verify that the username tag is spelled perfectly.");
+                    hintOverlay.innerText = "⌨️ W,A,S,D to Walk • Drag Mouse to Look • Click on an Orange Door to Enter";
+                    return;
+                }
+                
+                const accountData = await accountRes.json();
+                const accountId = accountData.accountId;
+
+                hintOverlay.innerText = `⏳ Sweeping photo registry feeds for Account ID ${accountId}...`;
+
+                // Step 2: Grab full timeline feed indexes (capturing a maximum safety batch size of 100 entries)
+                const feedProxy = encodeURIComponent(`https://api.rec.net/api/images/v4/player/${accountId}?take=100`);
+                const feedRes = await fetch(`/api/upload?proxyUrl=${feedProxy}`);
+                const posts = await feedRes.json();
+
+                if (!posts || posts.length === 0) {
+                    alert("This user has no photos or feed logs published on rec.net!");
+                    return;
+                }
+
+                // Initialize local multi-file packaging instance
+                const zip = new JSZip();
+                const imageFolder = zip.folder("captured_images");
+                let textMetadataLog = [];
+
+                hintOverlay.innerText = `⏳ Bundling ${posts.length} original photos down to browser RAM files...`;
+
+                // Step 3: Fetch and process every text block and image binary array stream
+                for (let i = 0; i < posts.length; i++) {
+                    const post = posts[i];
+                    
+                    textMetadataLog.push({
+                        imageId: post.imageId,
+                        caption: post.description || "",
+                        timestamp: post.createdAt,
+                        cheers: post.cheersCount,
+                        comments: post.commentCount
+                    });
+
+                    try {
+                        // Retrieve the completely unfiltered image file source binary array
+                        const rawImageProxy = encodeURIComponent(`https://img.rec.net/${post.imageName}`);
+                        const imageResponse = await fetch(`/api/upload?proxyUrl=${rawImageProxy}`);
+                        const fileBlob = await imageResponse.blob();
+                        
+                        imageFolder.file(`${post.imageId}.jpg`, fileBlob);
+                    } catch (imgErr) {
+                        console.error(`Skipped corrupt structural index frame ${post.imageId}`);
+                    }
+                }
+
+                // Append the master structural history text file into the folder
+                zip.file("profile_feed_manifest.json", JSON.stringify(textMetadataLog, null, 2));
+
+                // Grab and bundle their profile avatar render picture if it exists
+                try {
+                    const avatarProxy = encodeURIComponent(`https://api.rec.net/api/images/v4/avatar?accountId=${accountId}`);
+                    const avatarResponse = await fetch(`/api/upload?proxyUrl=${avatarProxy}`);
+                    const avatarBlob = await avatarResponse.blob();
+                    zip.file("avatar_render.png", avatarBlob);
+                } catch (avErr) {}
+
+                // Step 4: Output download file system window prompt to browser
+                hintOverlay.innerText = "⏳ Compiling ZIP compression maps...";
+                const finalZipBlob = await zip.generateAsync({ type: "blob" });
+                
+                const downloadAnchor = document.createElement('a');
+                downloadAnchor.href = URL.createObjectURL(finalZipBlob);
+                downloadAnchor.download = `${username}_recnet_time_capsule.zip`;
+                document.body.appendChild(downloadAnchor);
+                downloadAnchor.click();
+                document.body.removeChild(downloadAnchor);
+
+                hintOverlay.innerText = "✅ Archive saved successfully! Check your Downloads folder.";
+
+            } catch (err) {
+                console.error("Scraper crash loop: ", err);
+                alert("Communication framework exception error. The system could not read the profile metadata cleanly.");
+                hintOverlay.innerText = "⌨️ W,A,S,D to Walk • Drag Mouse to Look • Click on an Orange Door to Enter";
+            }
+        }
+
+        function spawnDoorUI(username, zDepth, side, modelUrl, avatarUrl) {
             const container = document.getElementById('hallwayDoors');
             const doorGroup = document.createElement('a-entity');
             
@@ -223,6 +334,27 @@
             
             signBacking.appendChild(textLabel);
             doorGroup.appendChild(signBacking);
+
+            if (avatarUrl) {
+                const frameGroup = document.createElement('a-entity');
+                frameGroup.setAttribute('position', '1.3 1.5 0.05');
+
+                const picBacking = document.createElement('a-box');
+                picBacking.setAttribute('width', '0.6');
+                picBacking.setAttribute('height', '0.6');
+                picBacking.setAttribute('depth', '0.04');
+                picBacking.setAttribute('color', '#1e293b');
+                frameGroup.appendChild(picBacking);
+
+                const picCanvas = document.createElement('a-image');
+                picCanvas.setAttribute('src', avatarUrl);
+                picCanvas.setAttribute('position', '0 0 0.03');
+                picCanvas.setAttribute('width', '0.54');
+                picCanvas.setAttribute('height', '0.54');
+                frameGroup.appendChild(picCanvas);
+
+                doorGroup.appendChild(frameGroup);
+            }
 
             container.appendChild(doorGroup);
         }
@@ -277,7 +409,7 @@
                         const fileDataRes = await fetch(file.download_url);
                         const data = await fileDataRes.json();
                         
-                        spawnDoorUI(data.username, data.zDepth, data.side, data.modelUrl);
+                        spawnDoorUI(data.username, data.zDepth, data.side, data.modelUrl, data.avatarUrl);
                         
                         currentZ = data.zDepth;
                         isLeftWall = data.side !== 'left';
