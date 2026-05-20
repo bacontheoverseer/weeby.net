@@ -230,7 +230,7 @@
             reader.readAsDataURL(file);
         }
 
-        // --- STABLE LAZY-RENDERED TIMELINE COMPILER ---
+        // --- FIXED: DIRECT BROWSER CONNECTIVITY PIPELINE ---
         async function runBrowserScraper() {
             const username = document.getElementById('scraperUsernameInput').value.trim();
             if (!username) { alert("Please type in a Rec Room username first!"); return; }
@@ -238,12 +238,13 @@
             const scrapeBtn = document.getElementById('scrapeBtn');
             scrapeBtn.innerText = "⏳ Reading Profile...";
             scrapeBtn.disabled = true;
-            hintOverlay.innerText = "⏳ Loading user identity metrics directly from your browser...";
+            hintOverlay.innerText = "⏳ Connecting directly to rec.net framework nodes...";
             
             try {
+                // Pulling data straight from Rec Room's public CORS-enabled API endpoints
                 const accountRes = await fetch(`https://accounts.rec.net/account?username=${encodeURIComponent(username)}`);
                 if (!accountRes.ok) {
-                    alert("Account lookup failed! The user could not be located on the rec.net cluster network.");
+                    alert("Account lookup failed! The profile could not be located on the live rec.net server cluster.");
                     resetScrapeButton();
                     return;
                 }
@@ -253,15 +254,20 @@
                 globallyScrapedUsername = username;
 
                 if (!globallyScrapedId) {
-                    alert("No internal mapping signature exists for that profile.");
+                    alert("No valid account ID signature returned for this user.");
                     resetScrapeButton();
                     return;
                 }
 
                 hintOverlay.innerText = "⏳ Compiling historical photo timeline indexes...";
 
-                const feedProxy = encodeURIComponent(`https://api.rec.net/api/images/v4/player/${globallyScrapedId}?take=40`);
-                const feedRes = await fetch(`/api/upload?proxyUrl=${feedProxy}`);
+                // Fetching the user feed index directly from the browser context
+                const feedRes = await fetch(`https://api.rec.net/api/images/v4/player/${globallyScrapedId}?take=35`);
+                if (!feedRes.ok) {
+                    alert("Failed to grab the timeline feed manifest from the server network.");
+                    resetScrapeButton();
+                    return;
+                }
                 globallyScrapedPosts = await feedRes.json();
 
                 if (!globallyScrapedPosts || globallyScrapedPosts.length === 0) {
@@ -273,18 +279,17 @@
                 document.getElementById('feedUserTag').innerText = `@${username}`;
                 document.getElementById('feedCountText').innerText = `${globallyScrapedPosts.length} historical memory nodes captured`;
                 
-                const avatarProxyUrl = `/api/upload?proxyUrl=${encodeURIComponent(`https://api.rec.net/api/images/v4/avatar?accountId=${globallyScrapedId}`)}`;
-                document.getElementById('feedUserAvatar').src = avatarProxyUrl;
+                // Point images directly to their raw addresses—no proxy server traffic jams
+                document.getElementById('feedUserAvatar').src = `https://api.rec.net/api/images/v4/avatar?accountId=${globallyScrapedId}`;
 
                 const feedGrid = document.getElementById('feedGrid');
                 feedGrid.innerHTML = "";
 
-                // Render structural layouts and map source attributes to the browser framework directly
                 globallyScrapedPosts.forEach((post, index) => {
                     const postCard = document.createElement('div');
                     postCard.className = 'feed-card';
                     const postedDate = new Date(post.createdAt).toLocaleDateString(undefined, { month: 'short', day: 'numeric', year: 'numeric' });
-                    const rawImgUrl = `/api/upload?proxyUrl=${encodeURIComponent(`https://img.rec.net/${post.imageName}`)}`;
+                    const rawImgUrl = `https://img.rec.net/${post.imageName}`;
 
                     postCard.innerHTML = `
                         <div class="feed-img-wrapper" style="background: #1e293b;">
@@ -293,7 +298,7 @@
                                  class="feed-card-img" 
                                  loading="lazy" 
                                  alt="RecRoom Photo"
-                                 onerror="this.style.display='none'; this.parentElement.innerHTML='<div style=\'color:var(--text-muted); font-size:0.8rem; padding:4rem; text-align:center;\'>❌ Image Unavailable</div>';">
+                                 onerror="this.style.display='none'; this.parentElement.innerHTML='<div style=\'color:var(--text-muted); font-size:0.8rem; padding:4rem; text-align:center;\'>❌ Image Private or Missing</div>';">
                         </div>
                         <div class="feed-card-content">
                             <p class="feed-card-caption">${post.description ? post.description : "<i>No caption provided.</i>"}</p>
@@ -306,20 +311,19 @@
                     feedGrid.appendChild(postCard);
                 });
 
-                // Open and reveal feed preview interface card blocks
                 document.getElementById('feedWrapper').style.display = 'block';
                 document.getElementById('feedWrapper').scrollIntoView({ behavior: 'smooth' });
                 hintOverlay.innerText = "✅ Timeline loaded! Scroll down to explore or download the full asset bundle.";
 
             } catch (err) {
                 console.error(err);
-                alert("Network transaction failed during profile rendering layout setups.");
+                alert("Direct database read failed. The rec.net node rejected the browser layout request.");
             } finally {
                 resetScrapeButton();
             }
         }
 
-        // --- SERVERLESS STREAM FILE ZIP COMPRESSION PIPELINE ---
+        // --- CLIENT-SIDE DIRECT ZIP COMPRESSION PIPELINE ---
         async function downloadCompiledArchiveZip() {
             if (!globallyScrapedPosts || globallyScrapedPosts.length === 0) return;
 
@@ -332,7 +336,7 @@
                 const imageFolder = zip.folder("captured_images");
                 let textMetadataLog = [];
 
-                const BATCH_SIZE = 5;
+                const BATCH_SIZE = 4;
                 for (let i = 0; i < globallyScrapedPosts.length; i += BATCH_SIZE) {
                     const currentBatch = globallyScrapedPosts.slice(i, i + BATCH_SIZE);
                     hintOverlay.innerText = `⏳ Packing bundle files (${i + 1}/${globallyScrapedPosts.length})...`;
@@ -347,8 +351,7 @@
                         });
 
                         try {
-                            const rawImageProxy = encodeURIComponent(`https://img.rec.net/${post.imageName}`);
-                            const imageResponse = await fetch(`/api/upload?proxyUrl=${rawImageProxy}&t=${Date.now()}`);
+                            const imageResponse = await fetch(`https://img.rec.net/${post.imageName}`);
                             if (imageResponse.ok) {
                                 const fileBlob = await imageResponse.blob();
                                 imageFolder.file(`${post.imageId}.jpg`, fileBlob);
@@ -360,8 +363,7 @@
                 zip.file("profile_feed_manifest.json", JSON.stringify(textMetadataLog, null, 2));
 
                 try {
-                    const avatarProxy = encodeURIComponent(`https://api.rec.net/api/images/v4/avatar?accountId=${globallyScrapedId}`);
-                    const avatarResponse = await fetch(`/api/upload?proxyUrl=${avatarProxy}`);
+                    const avatarResponse = await fetch(`https://api.rec.net/api/images/v4/avatar?accountId=${globallyScrapedId}`);
                     if (avatarResponse.ok) {
                         const avatarBlob = await avatarResponse.blob();
                         zip.file("avatar_render.png", avatarBlob);
