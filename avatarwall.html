@@ -3,10 +3,12 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>WeebyHost - Rec Room Avatar Wall</title>
+    <title>WeebyHost - Rec Room 3D Avatar Wall</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    
+    <script type="module" src="https://ajax.googleapis.com/ajax/libs/model-viewer/3.4.0/model-viewer.min.js"></script>
     
     <style>
         :root {
@@ -32,24 +34,23 @@
         .hero-title { font-size: 3rem; font-weight: 800; letter-spacing: -1.5px; margin-bottom: 0.5rem; }
         .hero-subtitle { color: var(--text-muted); font-size: 1rem; max-width: 600px; margin: 0 auto 2.5rem auto; }
 
-        .wall-canvas { background: #0f172a; border: 4px solid var(--panel-bg); border-radius: 28px; min-height: 500px; position: relative; margin-bottom: 3rem; overflow: hidden; box-shadow: inset 0 4px 20px rgba(0,0,0,0.4); }
+        /* THE DRAGGABLE PLATFORM CANVAS */
+        .wall-canvas { background: #0f172a; border: 4px solid var(--panel-bg); border-radius: 28px; min-height: 550px; position: relative; margin-bottom: 3rem; overflow: hidden; box-shadow: inset 0 4px 20px rgba(0,0,0,0.4); }
         .grid-background { position: absolute; width: 100%; height: 100%; top: 0; left: 0; background-size: 40px 40px; background-image: linear-gradient(to right, rgba(51, 65, 85, 0.15) 1px, transparent 1px), linear-gradient(to bottom, rgba(51, 65, 85, 0.15) 1px, transparent 1px); pointer-events: none; }
 
-        .avatar-card { position: absolute; background: var(--panel-bg); padding: 1rem; border-radius: 20px; box-shadow: 0 10px 25px rgba(0,0,0,0.3); cursor: grab; user-select: none; width: 140px; display: flex; flex-direction: column; align-items: center; border: 2px solid transparent; touch-action: none; }
-        .avatar-card:active { cursor: grabbing; box-shadow: 0 15px 35px rgba(0,0,0,0.5); border-color: var(--rr-orange); }
+        /* INTERACTIVE 3D COMPONENT CARDS */
+        .avatar-card { position: absolute; background: var(--panel-bg); padding: 1rem; border-radius: 20px; box-shadow: 0 10px 25px rgba(0,0,0,0.3); width: 180px; display: flex; flex-direction: column; align-items: center; border: 2px solid transparent; touch-action: none; }
+        .card-handle { width: 100%; cursor: grab; display: flex; flex-direction: column; align-items: center; padding-bottom: 0.4rem; }
+        .card-handle:active { cursor: grabbing; }
+        .avatar-card:focus-within { border-color: var(--rr-orange); box-shadow: 0 15px 35px rgba(0,0,0,0.5); }
         
-        .avatar-name { font-size: 0.85rem; font-weight: 700; color: white; margin-bottom: 0.6rem; text-overflow: ellipsis; overflow: hidden; white-space: nowrap; width: 100%; text-align: center; }
-        .avatar-frame { width: 90px; height: 90px; border-radius: 50%; background: #0f172a; border: 3px solid var(--rr-orange); overflow: hidden; display: flex; justify-content: center; align-items: center; position: relative; }
-        .avatar-img { width: 100%; height: 100%; object-fit: cover; pointer-events: none; }
+        .avatar-name { font-size: 0.85rem; font-weight: 700; color: white; text-overflow: ellipsis; overflow: hidden; white-space: nowrap; width: 100%; text-align: center; }
+        
+        /* HOUSES THE GOOGLE MODEL-VIEWER EMBED */
+        .avatar-frame { width: 140px; height: 160px; border-radius: 14px; background: #0f172a; border: 2px solid #334155; overflow: hidden; position: relative; }
+        model-viewer { width: 100%; height: 100%; --poster-color: transparent; }
 
-        .anim-float { animation: floatIdle 3s ease-in-out infinite; }
-        .anim-bounce { animation: bounceIdle 2.5s ease-in-out infinite; }
-        .anim-sway { animation: swayIdle 4s ease-in-out infinite; }
-
-        @keyframes floatIdle { 0%, 100% { transform: translateY(0px); } 50% { transform: translateY(-8px); } }
-        @keyframes bounceIdle { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-12px); } }
-        @keyframes swayIdle { 0%, 100% { transform: rotate(0deg); } 33% { transform: rotate(3deg); } 66% { transform: rotate(-3deg); } }
-
+        /* UPLOAD COMPONENT FORMS */
         .upload-layout { max-width: 500px; margin: 0 auto 4rem auto; text-align: left; }
         .upload-card { background: var(--panel-bg); border-radius: 24px; padding: 2.5rem; box-shadow: 0 15px 35px rgba(0,0,0,0.2); }
         .upload-card h3 { font-size: 1.3rem; font-weight: 800; margin-bottom: 0.5rem; color: white; }
@@ -73,13 +74,13 @@
     <nav class="navbar">
         <a href="#" class="logo">Rec<span>Museum</span></a>
         <div class="nav-links">
-            <a href="index.html">⬅ Go to 3D Museum Hallway</a>
+            <a href="index.html">⬅ Back to 3D Museum Hallway</a>
         </div>
     </nav>
 
     <main class="container">
-        <h1 class="hero-title">The Avatar Board</h1>
-        <p class="hero-subtitle">Upload your character snapshot. Drag players around the play-space board to coordinate maps or watch them vibe.</p>
+        <h1 class="hero-title">The 3D Avatar Board</h1>
+        <p class="hero-subtitle">Upload your character file (.gltf / .glb). Drag items to rearrange layout files, or use your mouse inside frames to spin them!</p>
 
         <div class="wall-canvas" id="wallCanvas">
             <div class="grid-background"></div>
@@ -87,8 +88,8 @@
 
         <div class="upload-layout">
             <div class="upload-card">
-                <h3>Pin Your Avatar to the Wall</h3>
-                <p>Upload a profile image snapshot of your player avatar character.</p>
+                <h3>Pin Your 3D Avatar to the Wall</h3>
+                <p>Upload your actual exported Rec Room 3D mesh model file.</p>
                 
                 <form id="avatarUploadForm">
                     <div class="form-group">
@@ -97,36 +98,34 @@
                     </div>
                     
                     <div class="form-group">
-                        <label>Avatar Portrait Photo (.png, .jpg)</label>
+                        <label>Avatar Mesh Asset (.gltf, .glb)</label>
                         <div class="file-drop-zone" id="dropZone">
-                            <span id="dropZoneText">📷 Click or Drop Image here</span>
-                            <input type="file" id="fileInput" accept="image/*" style="display: none;" required>
+                            <span id="dropZoneText">📁 Click or Drop 3D File here</span>
+                            <input type="file" id="fileInput" accept=".gltf,.glb" style="display: none;" required>
                         </div>
                     </div>
 
-                    <button type="submit" class="btn-submit" id="submitBtn">Pin Avatar On Board</button>
+                    <button type="submit" class="btn-submit" id="submitBtn">Pin 3D Avatar On Board</button>
                 </form>
             </div>
         </div>
     </main>
 
     <footer>
-        <p>&copy; 2026 WeebyHost Museum Project. Sandbox Engine Layout.</p>
+        <p>&copy; 2026 WeebyHost Museum Project. Model Viewer Matrix Layout.</p>
     </footer>
 
     <script>
         const GITHUB_USERNAME = "bacontheoverseer";
         const REPO_NAME = "weeby.net";
 
-        let selectedImageBase64 = null;
+        let selectedMeshBase64 = null;
         const wallCanvas = document.getElementById('wallCanvas');
         const dropZone = document.getElementById('dropZone');
         const fileInput = document.getElementById('fileInput');
         const dropZoneText = document.getElementById('dropZoneText');
         const avatarForm = document.getElementById('avatarUploadForm');
         const submitBtn = document.getElementById('submitBtn');
-
-        const standbyStyles = ['anim-float', 'anim-bounce', 'anim-sway'];
 
         dropZone.addEventListener('click', () => fileInput.click());
         dropZone.addEventListener('dragover', (e) => { e.preventDefault(); dropZone.classList.add('active'); });
@@ -135,39 +134,53 @@
         fileInput.addEventListener('change', (e) => handleFile(e.target.files[0]));
 
         function handleFile(file) {
-            if (!file || !file.type.startsWith('image/')) { alert("Please attach a valid image snapshot!"); return; }
-            dropZoneText.innerText = `✅ Loaded Image: ${file.name}`;
-            
+            if (!file || (!file.name.endsWith('.gltf') && !file.name.endsWith('.glb'))) { 
+                alert("Please attach a valid 3D .gltf or .glb avatar file!"); return; 
+            }
+            dropZoneText.innerText = `✅ Loaded Model: ${file.name}`;
             const reader = new FileReader();
-            reader.onload = (e) => { selectedImageBase64 = e.target.result.split(',')[1]; };
+            reader.onload = (e) => { selectedMeshBase64 = e.target.result.split(',')[1]; };
             reader.readAsDataURL(file);
         }
 
-        function buildAvatarOnWall(username, imgUrl, xPos, yPos) {
+        // Spawns interactive panels using native interactive Google <model-viewer> tags
+        function buildAvatarOnWall(username, model3dUrl, xPos, yPos) {
             const card = document.createElement('div');
             card.className = 'avatar-card';
             card.style.left = `${xPos}px`; card.style.top = `${yPos}px`;
 
+            // Top drag handle zone so dragging doesn't fight with the 3D orbit viewer spins
+            const handle = document.createElement('div');
+            handle.className = 'card-handle';
+            
             const label = document.createElement('div');
             label.className = 'avatar-name'; label.innerText = `@${username}`;
-            card.appendChild(label);
+            handle.appendChild(label);
+            card.appendChild(handle);
 
             const frame = document.createElement('div');
             frame.className = 'avatar-frame';
-            frame.classList.add(standbyStyles[Math.floor(Math.random() * standbyStyles.length)]);
 
-            const img = document.createElement('img');
-            img.className = 'avatar-img'; img.src = imgUrl;
+            // Insert Google's 3D component engine directly into our grid card
+            const viewer = document.createElement('model-viewer');
+            viewer.setAttribute('src', model3dUrl);
+            viewer.setAttribute('camera-controls', '');
+            viewer.setAttribute('auto-rotate', ''); // Spins slowly on stand-by
+            viewer.setAttribute('autoplay', '');     // Plays built-in animations natively
+            viewer.setAttribute('shadow-intensity', '1');
+            viewer.setAttribute('interaction-prompt', 'none');
             
-            frame.appendChild(img); card.appendChild(frame);
-            initDragLogic(card);
+            frame.appendChild(viewer);
+            card.appendChild(frame);
+            
+            initDragLogic(card, handle);
             wallCanvas.appendChild(card);
         }
 
-        function initDragLogic(element) {
+        function initDragLogic(element, handleZone) {
             let activeX = 0, activeY = 0, currentX = 0, currentY = 0;
-            element.addEventListener('mousedown', dragStart);
-            element.addEventListener('touchstart', dragStart, { passive: false });
+            handleZone.addEventListener('mousedown', dragStart);
+            handleZone.addEventListener('touchstart', dragStart, { passive: false });
 
             function dragStart(e) {
                 e.preventDefault();
@@ -200,7 +213,12 @@
                 element.style.left = `${nextLeft}px`; element.style.top = `${nextTop}px`;
             }
 
-            document.removeEventListener('mousemove', dragMove);
+            function dragEnd() {
+                document.removeEventListener('mousemove', dragMove);
+                document.removeEventListener('mouseup', dragEnd);
+                document.removeEventListener('touchmove', dragMove);
+                document.removeEventListener('touchend', dragEnd);
+            }
         }
 
         async function fetchAvatarsFromRegistry() {
@@ -222,20 +240,19 @@
 
                         buildAvatarOnWall(data.username, data.profilePicUrl, startX, startY);
 
-                        startX += 170;
-                        if (startX > wallCanvas.clientWidth - 160) { startX = 40; startY += 170; }
+                        startX += 210;
+                        if (startX > wallCanvas.clientWidth - 190) { startX = 40; startY += 230; }
                     }
                 }
-            } catch (err) { console.error("Error displaying board profiles:", err); }
+            } catch (err) { console.error("Error displaying board 3D models:", err); }
         }
 
-        // --- DISPATCHES TO SECURE VERCEL TOKEN PASSTHROUGH ROUTE ---
         avatarForm.addEventListener('submit', async (e) => {
             e.preventDefault();
             const username = document.getElementById('usernameInput').value.trim();
-            if (!selectedImageBase64) { alert("Please drop or choose an image snapshot first!"); return; }
+            if (!selectedMeshBase64) { alert("Please drop or choose a 3D avatar file first!"); return; }
 
-            submitBtn.innerText = "Securing files to board matrix...";
+            submitBtn.innerText = "Securing 3D model files to repository...";
             submitBtn.disabled = true;
 
             try {
@@ -244,25 +261,21 @@
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({
                         username: username,
-                        fileContent: selectedImageBase64
+                        fileContent: selectedMeshBase64
                     })
                 });
 
                 if (response.ok) {
-                    alert("Avatar card successfully added! Reparsing board assets...");
+                    alert("3D Avatar successfully added to the board! Updating components...");
                     setTimeout(async () => { await fetchAvatarsFromRegistry(); }, 1200);
                     avatarForm.reset();
-                    dropZoneText.innerText = "📷 Click or Drop Image here";
-                    selectedImageBase64 = null;
+                    dropZoneText.innerText = "📁 Click or Drop 3D File here";
+                    selectedMeshBase64 = null;
                 } else {
-                    alert("Error communicating profile changes via secure pipeline routes.");
+                    alert("Error processing your upload via Vercel api token nodes.");
                 }
-            } catch (err) {
-                alert("Network communication timeout handling file writes.");
-            } finally {
-                submitBtn.disabled = false;
-                submitBtn.innerText = "Pin Avatar On Board";
-            }
+            } catch (err) { alert("Network communication timeout handling file writes."); }
+            finally { submitBtn.disabled = false; submitBtn.innerText = "Pin 3D Avatar On Board"; }
         });
 
         fetchAvatarsFromRegistry();
