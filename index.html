@@ -3,14 +3,13 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>WeebyHost - Rec Room Dorm Museum & Archive</title>
+    <title>WeebyHost - Rec Room Dorm Museum</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     
     <script src="https://aframe.io/releases/1.4.0/aframe.min.js"></script>
     <script src="https://cdn.jsdelivr.net/gh/c-frame/aframe-extras@7.2.0/dist/aframe-extras.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
     
     <style>
         :root {
@@ -42,8 +41,8 @@
         .loading-text { font-size: 1.5rem; font-weight: 800; color: var(--rr-orange); margin-bottom: 0.5rem; }
         .back-btn { display: none; position: absolute; top: 20px; left: 20px; z-index: 20; background: var(--rr-orange); color: white; border: none; padding: 0.6rem 1.2rem; border-radius: 50px; font-weight: 700; cursor: pointer; }
 
-        .forms-layout { display: flex; gap: 2rem; max-width: 1100px; margin: 0 auto; text-align: left; }
-        .upload-card { background: var(--panel-bg); border-radius: 24px; padding: 2.5rem; flex: 1; box-shadow: 0 15px 35px rgba(0,0,0,0.2); height: fit-content; }
+        .forms-layout { max-width: 600px; margin: 0 auto; text-align: left; }
+        .upload-card { background: var(--panel-bg); border-radius: 24px; padding: 2.5rem; box-shadow: 0 15px 35px rgba(0,0,0,0.2); }
         .upload-card h3 { font-size: 1.3rem; font-weight: 800; margin-bottom: 0.5rem; color: white; }
         .upload-card p { font-size: 0.9rem; color: var(--text-muted); margin-bottom: 1.5rem; }
         
@@ -55,42 +54,20 @@
         .file-drop-zone { border: 2px dashed #475569; border-radius: 12px; padding: 1.5rem; text-align: center; background-color: #0f172a; cursor: pointer; font-weight: 600; color: var(--text-muted); }
         .file-drop-zone.active { border-color: var(--rr-orange); background: rgba(255,87,34,0.05); }
         
-        .btn-submit { background-color: var(--rr-orange); color: white; border: none; width: 100%; padding: 0.8rem; border-radius: 50px; font-weight: 700; font-size: 1rem; cursor: pointer; margin-top: 1rem; transition: background 0.2s; text-align: center; display: block; text-decoration: none; }
+        .btn-submit { background-color: var(--rr-orange); color: white; border: none; width: 100%; padding: 0.8rem; border-radius: 50px; font-weight: 700; font-size: 1rem; cursor: pointer; margin-top: 1rem; transition: background 0.2s; text-align: center; display: block; }
         .btn-submit:hover { background-color: var(--rr-orange-dark); }
-        .btn-secondary { background-color: #0f172a; border: 2px solid #334155; color: white; }
-        .btn-secondary:hover { background-color: #1e293b; border-color: var(--text-muted); }
-        
-        /* TIMELINE FEED PANELS */
-        .archive-feed-wrapper { max-width: 1100px; margin: 4rem auto 0 auto; padding: 2rem; background: #0f172a; border-radius: 28px; border: 2px solid var(--panel-bg); text-align: left; display: none; }
-        .feed-header { display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid var(--panel-bg); padding-bottom: 1.5rem; margin-bottom: 2rem; }
-        .feed-user-meta { display: flex; align-items: center; gap: 1rem; }
-        .feed-avatar { width: 64px; height: 64px; border-radius: 50%; background: var(--panel-bg); border: 2px solid var(--rr-orange); object-fit: cover; }
-        .feed-user-meta h4 { font-size: 1.4rem; font-weight: 800; }
-        .feed-user-meta p { color: var(--text-muted); font-size: 0.9rem; }
-        
-        .feed-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 2rem; }
-        .feed-card { background: var(--panel-bg); border-radius: 20px; overflow: hidden; box-shadow: 0 10px 25px rgba(0,0,0,0.15); transition: transform 0.2s; }
-        .feed-card:hover { transform: translateY(-4px); }
-        .feed-img-wrapper { width: 100%; aspect-ratio: 16/9; background: #0f172a; overflow: hidden; position: relative; }
-        .feed-card-img { width: 100%; height: 100%; object-fit: cover; }
-        .feed-card-content { padding: 1.25rem; }
-        .feed-card-caption { font-size: 0.95rem; font-weight: 500; margin-bottom: 1rem; color: #f1f5f9; line-height: 1.4; }
-        .feed-card-footer { display: flex; justify-content: space-between; align-items: center; color: var(--text-muted); font-size: 0.8rem; font-weight: 700; }
-        .feed-cheers { display: flex; align-items: center; gap: 0.3rem; color: var(--rr-orange); }
-        
-        .download-action-box { width: auto; min-width: 200px; }
         footer { text-align: center; padding: 3rem; color: var(--text-muted); font-size: 0.85rem; }
     </style>
 </head>
 <body>
 
     <nav class="navbar">
-        <a href="#" class="logo">Wee<span>by</span></a>
+        <a href="#" class="logo">Rec<span>Museum</span></a>
     </nav>
 
     <main class="museum-container">
         <h1 class="hero-title">The Hall of Dorms</h1>
-        <p class="hero-subtitle">Step inside the timeline. Click an orange door panel to load and walk through that user's custom environment build.</p>
+        <p class="hero-subtitle">Drop room configurations directly into your GitHub project's registry folder, or drop a file below to test it immediately inside this session.</p>
 
         <div class="museum-viewport-wrapper">
             <button class="back-btn" id="exitRoomBtn" onclick="returnToHallway()">⬅ Return to Hallway</button>
@@ -98,22 +75,18 @@
             
             <div class="loading-overlay" id="loadingOverlay">
                 <div class="loading-text" id="loadingStatusText">Loading Room Assets...</div>
-                <p style="color: var(--text-muted);">Pulling 3D maps directly from cloud archive nodes</p>
+                <p style="color: var(--text-muted);">Compiling pure static file buffers</p>
             </div>
 
             <div class="museum-window">
                 <a-scene embedded id="museumScene" cursor="rayOrigin: mouse" raycaster="objects: .clickable">
-                    <a-assets id="assetLibrary"></a-assets>
                     <a-sky color="#1a202c"></a-sky>
                     
                     <a-entity id="mainHallwayGroup">
                         <a-plane position="0 0 -250" rotation="-90 0 0" width="10" height="600" color="#855845"></a-plane>
                         
                         <a-box position="-5 2.5 -250" width="0.1" height="5" depth="600" color="#f1f5f9"></a-box>
-                        <a-box position="-5 0.2 -250" width="0.15" height="0.4" depth="600" color="#1e293b"></a-box>
-                        
                         <a-box position="4.9 2.5 -250" width="0.1" height="5" depth="600" color="#f1f5f9"></a-box>
-                        <a-box position="4.9 0.2 -250" width="0.15" height="0.4" depth="600" color="#1e293b"></a-box>
 
                         <a-box position="0 4.2 -2" width="4" height="1.0" depth="0.2" color="#ff5722">
                             <a-text value="REC ROOM MUSEUM" position="0 0 0.12" color="#ffffff" align="center" width="8" font="kelsonsans" bold="true"></a-text>
@@ -123,7 +96,6 @@
                     </a-entity>
 
                     <a-entity id="activeRoomModelContainer" position="0 0 0" visible="false"></a-entity>
-
                     <a-entity light="type: ambient; color: #777"></a-entity>
                     <a-entity light="type: directional; color: #fff; intensity: 0.6" position="-1 2 1"></a-entity>
 
@@ -131,8 +103,6 @@
                         <a-entity camera look-controls position="0 1.6 0">
                             <a-cursor id="mouseCursor" color="#ff5722" scale="0.8 0.8 0.8" raycaster="objects: .clickable"></a-cursor>
                         </a-entity>
-                        <a-entity laser-controls="hand: left" raycaster="objects: .clickable; far: 10; interval: 100"></a-entity>
-                        <a-entity laser-controls="hand: right" raycaster="objects: .clickable; far: 10; interval: 100"></a-entity>
                     </a-entity>
                 </a-scene>
             </div>
@@ -140,58 +110,31 @@
 
         <div class="forms-layout">
             <div class="upload-card">
-                <h3>Add Your Room to the Hall</h3>
-                <p>Upload your exported `.gltf` bundle from your Steam files.</p>
+                <h3>Instant Live-Session Tester</h3>
+                <p>Drop a `.gltf` file below to spawn a door instantly in your current browser tab without touching any servers.</p>
                 
                 <form id="uploadForm">
                     <div class="form-group">
-                        <label>Rec Room Username</label>
-                        <input type="text" id="usernameInput" placeholder="e.g., CoolPlayerVR" required>
+                        <label>Display Room Owner Name</label>
+                        <input type="text" id="usernameInput" placeholder="e.g., GuestRoomBuild" required>
                     </div>
                     
                     <div class="form-group">
-                        <label>Exported Room Asset (.gltf)</label>
+                        <label>Select Room Asset (.gltf)</label>
                         <div class="file-drop-zone" id="dropZone">
                             <span id="dropZoneText">📁 Click or Drag & Drop `.gltf` here</span>
                             <input type="file" id="fileInput" accept=".gltf" style="display: none;" required>
                         </div>
                     </div>
 
-                    <button type="submit" class="btn-submit" id="submitBtn">Hang Sign & Register Door</button>
+                    <button type="submit" class="btn-submit" id="submitBtn">Spawn Temporary Door</button>
                 </form>
             </div>
-
-            <div class="upload-card">
-                <h3>Look Up Profile Feed</h3>
-                <p>Load someone's rec.net timeline posts, images, and avatar directly into an archive viewer page.</p>
-                
-                <div class="form-group">
-                    <label>Rec Room Account Name</label>
-                    <input type="text" id="scraperUsernameInput" placeholder="e.g., YourUsernameTag">
-                </div>
-                <button type="button" class="btn-submit btn-secondary" id="scrapeBtn" onclick="runBrowserScraper()">Load Profile Timeline</button>
-            </div>
         </div>
-
-        <section class="archive-feed-wrapper" id="feedWrapper">
-            <div class="feed-header">
-                <div class="feed-user-meta">
-                    <img src="" class="feed-avatar" id="feedUserAvatar" alt="Avatar">
-                    <div>
-                        <h4 id="feedUserTag">@Username</h4>
-                        <p id="feedCountText">0 historical moments captured</p>
-                    </div>
-                </div>
-                <div class="download-action-box">
-                    <button class="btn-submit" id="zipDownloadBtn" onclick="downloadCompiledArchiveZip()">📥 Save Whole Archive (.ZIP)</button>
-                </div>
-            </div>
-            <div class="feed-grid" id="feedGrid"></div>
-        </section>
     </main>
 
     <footer>
-        <p>&copy; 2026 WeebyHost Museum Project. Completely open source and independent.</p>
+        <p>&copy; 2026 WeebyHost Museum Project. Pure Front-End Render Layout.</p>
     </footer>
 
     <script>
@@ -202,10 +145,7 @@
         
         let currentZ = -6;
         let isLeftWall = true;
-        let selectedFileBase64 = null;
-        let globallyScrapedPosts = []; 
-        let globallyScrapedUsername = "";
-        let globallyScrapedId = "";
+        let activeLocalBlobUrl = null;
 
         const dropZone = document.getElementById('dropZone');
         const fileInput = document.getElementById('fileInput');
@@ -223,231 +163,14 @@
         fileInput.addEventListener('change', (e) => handleFile(e.target.files[0]));
 
         function handleFile(file) {
-            if (!file || !file.name.endsWith('.gltf')) { alert("Please attach a valid .gltf setup file!"); return; }
-            dropZoneText.innerText = `✅ Attached: ${file.name}`;
-            const reader = new FileReader();
-            reader.onload = (e) => { selectedFileBase64 = e.target.result.split(',')[1]; };
-            reader.readAsDataURL(file);
-        }
-
-        // --- HIGH-AVAILABILITY MULTI-PROXY CORRIDOR ENGINE ---
-        async function fetchWithTimeout(resource, options = {}) {
-            const { timeout = 4000 } = options;
-            const controller = new AbortController();
-            const id = setTimeout(() => controller.abort(), timeout);
-            const response = await fetch(resource, { ...options, signal: controller.signal });
-            clearTimeout(id);
-            return response;
-        }
-
-        async function runBrowserScraper() {
-            const username = document.getElementById('scraperUsernameInput').value.trim();
-            if (!username) { alert("Please type in a Rec Room username first!"); return; }
-
-            const scrapeBtn = document.getElementById('scrapeBtn');
-            scrapeBtn.innerText = "⏳ Reading Profile...";
-            scrapeBtn.disabled = true;
-            hintOverlay.innerText = "⏳ Establishing secure lookup tunnel...";
+            if (!file || !file.name.endsWith('.gltf')) { alert("Please attach a valid .gltf room mesh file!"); return; }
+            dropZoneText.innerText = `✅ Loaded: ${file.name}`;
             
-            let accountData = null;
-            const accountUrl = `https://accounts.rec.net/account?username=${encodeURIComponent(username)}`;
-
-            // --- STEP 1: ACCOUNT LOOKUP PIPELINE ---
-            try {
-                const response = await fetchWithTimeout(`https://api.allorigins.win/get?url=${encodeURIComponent(accountUrl)}`, { timeout: 3500 });
-                if (response.ok) {
-                    const wrapper = await response.json();
-                    if (wrapper.contents) accountData = JSON.parse(wrapper.contents);
-                }
-            } catch (err) { console.log("Primary routing node delayed. Swapping to secondary lane..."); }
-
-            if (!accountData) {
-                try {
-                    const response = await fetchWithTimeout(`https://proxy.cors.sh/${accountUrl}`, { timeout: 4000 });
-                    if (response.ok) accountData = await response.json();
-                } catch (err) { console.log("Secondary routing node choked. Swapping to tertiary emergency bypass..."); }
-            }
-
-            if (!accountData) {
-                try {
-                    const response = await fetchWithTimeout(`https://cors-anywhere.herokuapp.com/${accountUrl}`, {
-                        headers: { 'X-Requested-With': 'XMLHttpRequest' }
-                    });
-                    if (response.ok) accountData = await response.json();
-                } catch (err) { console.error("All public endpoint corridors are congested.", err); }
-            }
-
-            if (!accountData) {
-                alert("The lookup handshake timed out across all active channels. Try toggling your Wi-Fi/cellular connection or check the spelling.");
-                resetScrapeButton();
-                return;
-            }
-
-            globallyScrapedId = accountData.accountId;
-            globallyScrapedUsername = username;
-
-            if (!globallyScrapedId) {
-                alert("No internal ID mapping found for this handle.");
-                resetScrapeButton();
-                return;
-            }
-
-            hintOverlay.innerText = "⏳ Compiling historical photo timeline indexes...";
-            const feedUrl = `https://api.rec.net/api/images/v4/player/${globallyScrapedId}?take=35`;
-            let feedData = null;
-
-            // --- STEP 2: TIMELINE MANIFEST PIPELINE ---
-            try {
-                const response = await fetchWithTimeout(`https://api.allorigins.win/get?url=${encodeURIComponent(feedUrl)}`, { timeout: 3500 });
-                if (response.ok) {
-                    const wrapperFeed = await response.json();
-                    if (wrapperFeed.contents) feedData = JSON.parse(wrapperFeed.contents);
-                }
-            } catch (e) {}
-
-            if (!feedData) {
-                try {
-                    const response = await fetchWithTimeout(`https://proxy.cors.sh/${feedUrl}`, { timeout: 4000 });
-                    if (response.ok) feedData = await response.json();
-                } catch (e) {}
-            }
-
-            if (!feedData) {
-                try {
-                    const response = await fetchWithTimeout(`https://cors-anywhere.herokuapp.com/${feedUrl}`, {
-                        headers: { 'X-Requested-With': 'XMLHttpRequest' }
-                    });
-                    if (response.ok) feedData = await response.json();
-                } catch (e) {}
-            }
-
-            globallyScrapedPosts = feedData;
-
-            if (!globallyScrapedPosts || globallyScrapedPosts.length === 0) {
-                alert("This user has zero shared images or timeline posts logged.");
-                resetScrapeButton();
-                return;
-            }
-
-            // --- STEP 3: RENDER PROFILE LAYOUT ---
-            document.getElementById('feedUserTag').innerText = `@${username}`;
-            document.getElementById('feedCountText').innerText = `${globallyScrapedPosts.length} historical memory nodes captured`;
-            document.getElementById('feedUserAvatar').src = `https://api.rec.net/api/images/v4/avatar?accountId=${globallyScrapedId}`;
-
-            const feedGrid = document.getElementById('feedGrid');
-            feedGrid.innerHTML = "";
-
-            globallyScrapedPosts.forEach((post, index) => {
-                const postCard = document.createElement('div');
-                postCard.className = 'feed-card';
-                const postedDate = new Date(post.createdAt).toLocaleDateString(undefined, { month: 'short', day: 'numeric', year: 'numeric' });
-                const rawImgUrl = `https://img.rec.net/${post.imageName}`;
-
-                postCard.innerHTML = `
-                    <div class="feed-img-wrapper" style="background: #1e293b;">
-                        <img id="img-${index}" 
-                             src="${rawImgUrl}" 
-                             class="feed-card-img" 
-                             loading="lazy" 
-                             alt="RecRoom Photo"
-                             onerror="this.style.display='none'; this.parentElement.innerHTML='<div style=\'color:var(--text-muted); font-size:0.8rem; padding:4rem; text-align:center;\'>❌ Image Private or Missing</div>';">
-                    </div>
-                    <div class="feed-card-content">
-                        <p class="feed-card-caption">${post.description ? post.description : "<i>No caption provided.</i>"}</p>
-                        <div class="feed-card-footer">
-                            <span>📅 ${postedDate}</span>
-                            <span class="feed-cheers">🧡 ${post.cheersCount} Cheers</span>
-                        </div>
-                    </div>
-                `;
-                feedGrid.appendChild(postCard);
-            });
-
-            document.getElementById('feedWrapper').style.display = 'block';
-            document.getElementById('feedWrapper').scrollIntoView({ behavior: 'smooth' });
-            hintOverlay.innerText = "✅ Timeline loaded! Scroll down to explore or download the full asset bundle.";
-            resetScrapeButton();
+            if (activeLocalBlobUrl) URL.revokeObjectURL(activeLocalBlobUrl);
+            activeLocalBlobUrl = URL.createObjectURL(file);
         }
 
-        // --- CLIENT-SIDE ZIP COMPRESSION CORRIDOR ---
-        async function downloadCompiledArchiveZip() {
-            if (!globallyScrapedPosts || globallyScrapedPosts.length === 0) return;
-
-            const zipBtn = document.getElementById('zipDownloadBtn');
-            zipBtn.innerText = "⏳ Compiling Zip Bundle...";
-            zipBtn.disabled = true;
-
-            try {
-                const zip = new JSZip();
-                const imageFolder = zip.folder("captured_images");
-                let textMetadataLog = [];
-
-                const BATCH_SIZE = 4;
-                for (let i = 0; i < globallyScrapedPosts.length; i += BATCH_SIZE) {
-                    const currentBatch = globallyScrapedPosts.slice(i, i + BATCH_SIZE);
-                    hintOverlay.innerText = `⏳ Packing bundle files (${i + 1}/${globallyScrapedPosts.length})...`;
-
-                    await Promise.all(currentBatch.map(async (post) => {
-                        textMetadataLog.push({
-                            imageId: post.imageId,
-                            caption: post.description || "",
-                            timestamp: post.createdAt,
-                            cheers: post.cheersCount,
-                            comments: post.commentCount
-                        });
-
-                        try {
-                            const rawTargetUrl = `https://img.rec.net/${post.imageName}`;
-                            const imageResponse = await fetch(`https://api.allorigins.win/get?url=${encodeURIComponent(rawTargetUrl)}`);
-                            if (imageResponse.ok) {
-                                const wrapperImg = await imageResponse.json();
-                                const blobRes = await fetch(wrapperImg.contents);
-                                const fileBlob = await blobRes.blob();
-                                imageFolder.file(`${post.imageId}.jpg`, fileBlob);
-                            }
-                        } catch (e) {}
-                    }));
-                }
-
-                zip.file("profile_feed_manifest.json", JSON.stringify(textMetadataLog, null, 2));
-
-                try {
-                    const rawAvatarUrl = `https://api.rec.net/api/images/v4/avatar?accountId=${globallyScrapedId}`;
-                    const avatarResponse = await fetch(`https://api.allorigins.win/get?url=${encodeURIComponent(rawAvatarUrl)}`);
-                    if (avatarResponse.ok) {
-                        const wrapperAv = await avatarResponse.json();
-                        const blobRes = await fetch(wrapperAv.contents);
-                        const avatarBlob = await blobRes.blob();
-                        zip.file("avatar_render.png", avatarBlob);
-                    }
-                } catch (e) {}
-
-                const finalZipBlob = await zip.generateAsync({ type: "blob", compression: "STORE" });
-                
-                const downloadAnchor = document.createElement('a');
-                downloadAnchor.href = URL.createObjectURL(finalZipBlob);
-                downloadAnchor.download = `${globallyScrapedUsername}_recnet_time_capsule.zip`;
-                document.body.appendChild(downloadAnchor);
-                downloadAnchor.click();
-                document.body.removeChild(downloadAnchor);
-
-                hintOverlay.innerText = "✅ Time capsule saved successfully! Check your computer downloads.";
-
-            } catch (err) {
-                alert("ZIP archive creation pipeline error.");
-            } finally {
-                zipBtn.innerText = "📥 Save Whole Archive (.ZIP)";
-                zipBtn.disabled = false;
-            }
-        }
-
-        function resetScrapeButton() {
-            const scrapeBtn = document.getElementById('scrapeBtn');
-            scrapeBtn.innerText = "Load Profile Timeline";
-            scrapeBtn.disabled = false;
-        }
-
-        function spawnDoorUI(username, zDepth, side, modelUrl, avatarUrl) {
+        function spawnDoorUI(username, zDepth, side, modelUrl) {
             const container = document.getElementById('hallwayDoors');
             const doorGroup = document.createElement('a-entity');
             
@@ -491,32 +214,9 @@
             textLabel.setAttribute('color', '#ffffff');
             textLabel.setAttribute('align', 'center');
             textLabel.setAttribute('width', '3.5');
-            textLabel.setAttribute('font', 'kelsonsans');
             
             signBacking.appendChild(textLabel);
             doorGroup.appendChild(signBacking);
-
-            if (avatarUrl) {
-                const frameGroup = document.createElement('a-entity');
-                frameGroup.setAttribute('position', '1.3 1.5 0.05');
-
-                const picBacking = document.createElement('a-box');
-                picBacking.setAttribute('width', '0.6');
-                picBacking.setAttribute('height', '0.6');
-                picBacking.setAttribute('depth', '0.04');
-                picBacking.setAttribute('color', '#1e293b');
-                frameGroup.appendChild(picBacking);
-
-                const picCanvas = document.createElement('a-image');
-                picCanvas.setAttribute('src', avatarUrl);
-                picCanvas.setAttribute('position', '0 0 0.03');
-                picCanvas.setAttribute('width', '0.54');
-                picCanvas.setAttribute('height', '0.54');
-                frameGroup.appendChild(picCanvas);
-
-                doorGroup.appendChild(frameGroup);
-            }
-
             container.appendChild(doorGroup);
         }
 
@@ -535,8 +235,8 @@
 
                 loadingOverlay.style.display = 'none';
                 exitRoomBtn.style.display = 'block';
-                hintOverlay.innerText = "Explore this room! Click the button or pull your trigger on it to return.";
-            }, 800);
+                hintOverlay.innerText = "Explore this room! Click the return button to step back outside.";
+            }, 500);
         }
 
         function returnToHallway() {
@@ -556,79 +256,59 @@
                 loadingOverlay.style.display = 'none';
                 exitRoomBtn.style.display = 'none';
                 hintOverlay.innerText = "⌨️ W,A,S,D to Walk • Drag Mouse to Look • Click on an Orange Door to Enter";
-            }, 600);
+            }, 400);
         }
 
+        // --- FIXED HIGH-FREQUENCY CACHE-BUSTING LAYOUT PARSER ---
         async function loadHallwayFromGitHub() {
             try {
-                const response = await fetch(`https://api.github.com/repos/${GITHUB_USERNAME}/${REPO_NAME}/contents/registry`);
+                const cacheBuster = new Date().getTime();
+                const response = await fetch(`https://api.github.com/repos/${GITHUB_USERNAME}/${REPO_NAME}/contents/registry?cb=${cacheBuster}`);
+                
                 if (!response.ok) return;
                 const files = await response.json();
                 
+                document.getElementById('hallwayDoors').innerHTML = "";
+                currentZ = -6;
+                isLeftWall = true;
+
                 for (let file of files) {
                     if (file.name.endsWith('.json')) {
-                        const fileDataRes = await fetch(file.download_url);
+                        const fileDataRes = await fetch(`${file.download_url}?cb=${cacheBuster}`);
                         const data = await fileDataRes.json();
-                        spawnDoorUI(data.username, data.zDepth, data.side, data.modelUrl, data.avatarUrl);
                         
-                        currentZ = data.zDepth;
-                        isLeftWall = data.side !== 'left';
+                        const doorUsername = data.username || file.name.replace('.json', '');
+                        const doorZ = typeof data.zDepth === 'number' ? data.zDepth : currentZ;
+                        const doorSide = data.side || (isLeftWall ? 'left' : 'right');
+                        const doorModel = data.modelUrl || `https://raw.githubusercontent.com/${GITHUB_USERNAME}/${REPO_NAME}/main/registry/${data.fileName || doorUsername + '.gltf'}`;
+
+                        spawnDoorUI(doorUsername, doorZ, doorSide, doorModel);
+                        
+                        currentZ = doorZ;
+                        isLeftWall = doorSide !== 'left';
                         if (!isLeftWall) currentZ -= 8; 
                     }
                 }
-            } catch (err) { console.error("Could not fetch grid items:", err); }
+            } catch (err) { console.error("Could not load repository doors safely:", err); }
         }
 
-        uploadForm.addEventListener('submit', async (e) => {
+        // Handles local testing session injections safely without servers
+        uploadForm.addEventListener('submit', (e) => {
             e.preventDefault();
             const username = document.getElementById('usernameInput').value.trim();
-            if (!selectedFileBase64) { alert("Please attach a valid room file first!"); return; }
-
-            submitBtn.innerText = "Processing Assets (Do not close this page)...";
-            submitBtn.disabled = true;
+            if (!activeLocalBlobUrl) { alert("Please attach a valid room setup first!"); return; }
 
             let side = isLeftWall ? 'left' : 'right';
-            let assignedZ = currentZ;
+            
+            spawnDoorUI(username, currentZ, side, activeLocalBlobUrl);
+            
+            isLeftWall = !isLeftWall;
+            if (isLeftWall) currentZ -= 8;
 
-            let fetchedAvatarUrl = "https://img.rec.net/default_avatar.png";
-            try {
-                const rawTargetUrl = `https://accounts.rec.net/account?username=${encodeURIComponent(username)}`;
-                const accountRes = await fetchWithTimeout(`https://api.allorigins.win/get?url=${encodeURIComponent(rawTargetUrl)}`, { timeout: 3500 });
-                if (accountRes.ok) {
-                    const wrapperData = await accountRes.json();
-                    if (wrapperData.contents) {
-                        const accountData = JSON.parse(wrapperData.contents);
-                        if (accountData && accountData.accountId) {
-                            fetchedAvatarUrl = `https://api.rec.net/api/images/v4/avatar?accountId=${accountData.accountId}`;
-                        }
-                    }
-                }
-            } catch(e) { console.log("Reverting to default avatar asset marker"); }
-
-            const payload = {
-                username: username,
-                side: side,
-                zDepth: assignedZ,
-                fileName: `${username}.gltf`,
-                fileContent: selectedFileBase64,
-                avatarUrl: fetchedAvatarUrl
-            };
-
-            try {
-                const response = await fetch('/api/upload', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(payload)
-                });
-
-                if (response.ok) {
-                    alert("Room upload complete! Updating the hallway layout now...");
-                    location.reload();
-                } else {
-                    alert(`Upload failed: ${await response.text()}`);
-                }
-            } catch (err) { alert("Network communication error."); }
-            finally { submitBtn.disabled = false; submitBtn.innerText = "Hang Sign & Register Door"; }
+            alert("Door successfully injected into this viewport session! Walk straight down the hallway corridor to view it.");
+            uploadForm.reset();
+            dropZoneText.innerText = "📁 Click or Drag & Drop `.gltf` here";
+            activeLocalBlobUrl = null;
         });
 
         loadHallwayFromGitHub();
