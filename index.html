@@ -67,7 +67,7 @@
 
     <main class="museum-container">
         <h1 class="hero-title">The Hall of Dorms</h1>
-        <p class="hero-subtitle">Drop room configurations directly into your GitHub project's registry folder, or drop a file below to test it immediately inside this session.</p>
+        <p class="hero-subtitle">Upload your exported Rec Room layout below. It writes directly to GitHub and appends a permanent doorway to the exhibition hallway.</p>
 
         <div class="museum-viewport-wrapper">
             <button class="back-btn" id="exitRoomBtn" onclick="returnToHallway()">⬅ Return to Hallway</button>
@@ -75,7 +75,7 @@
             
             <div class="loading-overlay" id="loadingOverlay">
                 <div class="loading-text" id="loadingStatusText">Loading Room Assets...</div>
-                <p style="color: var(--text-muted);">Compiling pure static file buffers</p>
+                <p style="color: var(--text-muted);">Syncing live structures directly from GitHub</p>
             </div>
 
             <div class="museum-window">
@@ -110,42 +110,43 @@
 
         <div class="forms-layout">
             <div class="upload-card">
-                <h3>Instant Live-Session Tester</h3>
-                <p>Drop a `.gltf` file below to spawn a door instantly in your current browser tab without touching any servers.</p>
+                <h3>Add Your Room to the Hall</h3>
+                <p>Upload your room file to permanently build your door inside the exhibition hallway gallery.</p>
                 
                 <form id="uploadForm">
                     <div class="form-group">
-                        <label>Display Room Owner Name</label>
-                        <input type="text" id="usernameInput" placeholder="e.g., GuestRoomBuild" required>
+                        <label>Rec Room Username</label>
+                        <input type="text" id="usernameInput" placeholder="e.g., BaconPlayer" required>
                     </div>
                     
                     <div class="form-group">
-                        <label>Select Room Asset (.gltf)</label>
+                        <label>Exported Room Asset (.gltf)</label>
                         <div class="file-drop-zone" id="dropZone">
                             <span id="dropZoneText">📁 Click or Drag & Drop `.gltf` here</span>
                             <input type="file" id="fileInput" accept=".gltf" style="display: none;" required>
                         </div>
                     </div>
 
-                    <button type="submit" class="btn-submit" id="submitBtn">Spawn Temporary Door</button>
+                    <button type="submit" class="btn-submit" id="submitBtn">Hang Sign & Save Room To GitHub</button>
                 </form>
             </div>
         </div>
     </main>
 
     <footer>
-        <p>&copy; 2026 WeebyHost Museum Project. Pure Front-End Render Layout.</p>
+        <p>&copy; 2026 WeebyHost Museum Project. Pure Direct Repository Engine.</p>
     </footer>
 
     <script>
-        // =========================================================
+        // =====================================================================
         const GITHUB_USERNAME = "bacontheoverseer";
         const REPO_NAME = "weeby.net";
-        // =========================================================
+        const GITHUB_TOKEN = "YOUR_GITHUB_PERSONAL_ACCESS_TOKEN_HERE"; // Insert your ghp_ Token here
+        // =====================================================================
         
         let currentZ = -6;
         let isLeftWall = true;
-        let activeLocalBlobUrl = null;
+        let selectedFileBase64 = null;
 
         const dropZone = document.getElementById('dropZone');
         const fileInput = document.getElementById('fileInput');
@@ -163,11 +164,14 @@
         fileInput.addEventListener('change', (e) => handleFile(e.target.files[0]));
 
         function handleFile(file) {
-            if (!file || !file.name.endsWith('.gltf')) { alert("Please attach a valid .gltf room mesh file!"); return; }
+            if (!file || !file.name.endsWith('.gltf')) { alert("Please attach a valid room .gltf configuration file!"); return; }
             dropZoneText.innerText = `✅ Loaded: ${file.name}`;
             
-            if (activeLocalBlobUrl) URL.revokeObjectURL(activeLocalBlobUrl);
-            activeLocalBlobUrl = URL.createObjectURL(file);
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                selectedFileBase64 = e.target.result.split(',')[1];
+            };
+            reader.readAsDataURL(file);
         }
 
         function spawnDoorUI(username, zDepth, side, modelUrl) {
@@ -235,7 +239,7 @@
 
                 loadingOverlay.style.display = 'none';
                 exitRoomBtn.style.display = 'block';
-                hintOverlay.innerText = "Explore this room! Click the return button to step back outside.";
+                hintOverlay.innerText = "Explore this room layout! Click the return button to go back to the museum hall.";
             }, 500);
         }
 
@@ -259,7 +263,7 @@
             }, 400);
         }
 
-        // --- FIXED HIGH-FREQUENCY CACHE-BUSTING LAYOUT PARSER ---
+        // --- CACHE-BUSTING PERMANENT REPOSITORY PARSER ---
         async function loadHallwayFromGitHub() {
             try {
                 const cacheBuster = new Date().getTime();
@@ -289,28 +293,81 @@
                         if (!isLeftWall) currentZ -= 8; 
                     }
                 }
-            } catch (err) { console.error("Could not load repository doors safely:", err); }
+            } catch (err) { console.error("Could not safely compile layout doors from repository:", err); }
         }
 
-        // Handles local testing session injections safely without servers
-        uploadForm.addEventListener('submit', (e) => {
+        // --- DIRECT PURE FRONT-END REPOSITORY WRITE MECHANISM ---
+        uploadForm.addEventListener('submit', async (e) => {
             e.preventDefault();
             const username = document.getElementById('usernameInput').value.trim();
-            if (!activeLocalBlobUrl) { alert("Please attach a valid room setup first!"); return; }
+            if (!selectedFileBase64) { alert("Please attach a valid .gltf file first!"); return; }
+
+            submitBtn.innerText = "Pushing assets directly to GitHub repository...";
+            submitBtn.disabled = true;
 
             let side = isLeftWall ? 'left' : 'right';
-            
-            spawnDoorUI(username, currentZ, side, activeLocalBlobUrl);
-            
-            isLeftWall = !isLeftWall;
-            if (isLeftWall) currentZ -= 8;
+            let assignedZ = currentZ;
 
-            alert("Door successfully injected into this viewport session! Walk straight down the hallway corridor to view it.");
-            uploadForm.reset();
-            dropZoneText.innerText = "📁 Click or Drag & Drop `.gltf` here";
-            activeLocalBlobUrl = null;
+            const jsonMetadata = {
+                username: username,
+                side: side,
+                zDepth: assignedZ,
+                fileName: `${username}.gltf`,
+                modelUrl: `https://raw.githubusercontent.com/${GITHUB_USERNAME}/${REPO_NAME}/main/registry/${username}.gltf`
+            };
+
+            const jsonBase64 = btoa(JSON.stringify(jsonMetadata, null, 2));
+
+            try {
+                // 1. Commit and push the massive 3D room file (.gltf)
+                await fetch(`https://api.github.com/repos/${GITHUB_USERNAME}/${REPO_NAME}/contents/registry/${username}.gltf`, {
+                    method: 'PUT',
+                    headers: {
+                        'Authorization': `token ${GITHUB_TOKEN}`,
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        message: `Archive 3D model configuration for player ${username}`,
+                        content: selectedFileBase64
+                    })
+                });
+
+                // 2. Commit and push the structural hallway entry layout file (.json)
+                const jsonPush = await fetch(`https://api.github.com/repos/${GITHUB_USERNAME}/${REPO_NAME}/contents/registry/${username}.json`, {
+                    method: 'PUT',
+                    headers: {
+                        'Authorization': `token ${GITHUB_TOKEN}`,
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        message: `Register hallway entry configuration for player ${username}`,
+                        content: jsonBase64
+                    })
+                });
+
+                if (jsonPush.ok) {
+                    alert("Assets successfully saved to your repository! Recompiling showroom...");
+                    // Delay slightly to give GitHub's data layer an extra half-second to catch up
+                    setTimeout(async () => {
+                        await loadHallwayFromGitHub();
+                    }, 1000);
+                    
+                    uploadForm.reset();
+                    dropZoneText.innerText = "📁 Click or Drag & Drop `.gltf` here";
+                    selectedFileBase64 = null;
+                } else {
+                    alert("GitHub registry upload error. Double check that your token permissions are fully valid.");
+                }
+
+            } catch (err) { 
+                alert("Network communication error while committing data structures."); 
+            } finally { 
+                submitBtn.disabled = false; 
+                submitBtn.innerText = "Hang Sign & Save Room To GitHub"; 
+            }
         });
 
+        // Pull persistent repository data at startup
         loadHallwayFromGitHub();
     </script>
 </body>
